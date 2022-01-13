@@ -1,11 +1,29 @@
-# Objectives
+# Course structure
 This course teaches the basic principles of Model-Driven Engineering - MDE. Students should learn:
 
+<!-- 
 1. The need for formal methods in critical system’s development
 2. Real-time models: Timed Automata and Hybrid Automata, Temporal logic, static verification of programs using UPPAAL
 3. Reasoning over requirements: First Order Logic, SAT and SMT solvers (including useful SMT theories), Automatic theorem proving using Z3, Dependent types and certified programming, Interactive theorem proving using Coq
 4. Program verification: Design by Contract and Hoare Logic, Verification of programs using dedicated program verification frameworks, Runtime Verification.
+ -->
 
+1. __Real-time models__
+  - Timed Automata and Hybrid Automata
+  - Temporal logic
+  - Static verification using UPPAAL
+
+2. __Requirements__
+  - First Order Logic
+  - SAT and SMT solvers 
+  - _Automatic_ theorem proving using Z3
+  - Dependent types and certified programming
+  - _Interactive_ theorem proving using Coq
+
+3. __Program verification__
+  - Design by Contract and Hoare Logic
+  - Verification of annotated programs
+  - Runtime Verification
 
 <!-- 
 # Syllabus
