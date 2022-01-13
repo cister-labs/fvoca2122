@@ -239,16 +239,23 @@ This suggests resorting to an \structure{automaton-based formalism} with an expl
 
 
 \begin{itemize}
-\item emphasis on decidability of the model-checking problem and corresponding practically efficient algorithms
+\item emphasis on decidability of the \structure{reachability} problem and corresponding practically efficient algorithms
 \item infinite underlying  timed transition systems are converted to \structure{finitely large} symbolic transition systems where \structure{reachability} becomes decidable (\alert{region} or \alert{zone} graphs)
 \end{itemize}
 
 \noindent
 \alert{Associated tools}
+\frsplit{
 \begin{itemize}
-\item \uppaal\ [Behrmann, David, Larsen, 04]
+\item \underline{\uppaal}\ [Behrmann, David, Larsen, 04]
+\item \textsc{Imitator} [André, 09]
+\end{itemize}
+}{
+\begin{itemize}
+\item \textsc{Prism} [Parker, Kwiatkowska, 00]
 \item \textsc{Kronos} [Bozga, 98]
 \end{itemize}
+}
 \end{slide}
 
 %----------------------------------------------------------------------------------
@@ -272,7 +279,7 @@ This suggests resorting to an \structure{automaton-based formalism} with an expl
 
 
 \begin{flushright}
-\texttt{www.uppaal.com}
+\texttt{www.uppaal.org}
 \end{flushright}
 \end{slide}
 
@@ -642,9 +649,9 @@ where
 
 \doExercise{Define $\TL{\mathsf{SwitchA}}$}{
 \begin{equation*}
-S = \pause \setdef{\pair{off,t}}{t \in \R_0^+} \cup \setdef{\pair{on,t}}{0 \leq t \leq 2} 
+S = \pause \setdef{\pair{off,\overline t}}{t \in \R_0^+} \cup \setdef{\pair{on,\overline t}}{0 \leq t \leq 2} 
 \end{equation*}
-where $t$ is a shorthand for $\eta$ such that $\eta\, x = t$
+where $\overline{t}$ is a shorthand for $\eta$ such that $\eta\, x = t$
 }
 \exerciseBack
 
@@ -664,10 +671,10 @@ where $t$ is a shorthand for $\eta$ such that $\eta\, x = t$
 \begin{align*}
 \only<1>{T = \ldots}
 \uncover<2->{
-\pair{off,t} \tran{d} \pair{off,t+d}\; & \; \text{for all $t,d \geq 0$}\\
- \pair{off,t} \tran{in} \pair{on,0}\; & \; \text{for all $t \geq 0$}\\
-\pair{on,t} \tran{d} \pair{on,t+d}\; & \; \text{for all $t,d \geq 0$ and $t+d \leq 2$}\\
-\pair{on,t} \ \tran{out} \pair{off,t}\; & \; \text{for all $1 \leq t \leq 2$}
+\pair{off,\overline t} \tran{d} \pair{off,\overline t+d}\; & \; \text{for all $t,d \geq 0$}\\
+ \pair{off,\overline t} \tran{in} \pair{on,\overline 0}\; & \; \text{for all $t \geq 0$}\\
+\pair{on,\overline t} \tran{d} \pair{on,\overline t+d}\; & \; \text{for all $t,d \geq 0$ and $t+d \leq 2$}\\
+\pair{on,\overline t} \ \tran{out} \pair{off,\overline t}\; & \; \text{for all $1 \leq t \leq 2$}
 }
 \end{align*}
 }
@@ -1081,7 +1088,7 @@ the assignment $j:=t$
 \begin{column}{5cm}
 \begin{center}
 % \includegraphics[width=5cm]{./images/tg1.jpg} 
-\uppbox[5cm]{Train}{./images/Train}
+\uppbox[5cm]{Train(id)}{./images/Train}
 \end{center}
 \end{column}
 
