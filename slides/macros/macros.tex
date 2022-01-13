@@ -39,8 +39,8 @@
     \getLecture. #2
     }
   \author{David Pereira \and Jos\'{e} Proen\c{c}a \and Eduardo Tovar}
-  \institute{CISTER -- ISEP \\ Porto, Portugal \flushright\url{https://cister-labs.github.io/ramde2122}}
-  \date{RAMDE 2021/2022\\Requirements and Model-driven Engineering}
+  \institute{CISTER -- ISEP \\ Porto, Portugal \flushright\url{https://cister-labs.github.io/fvoca2122}}
+  \date{FVOCA 2021/2022\\Formal Verification of Critical Applications}
 }
 
 
@@ -49,7 +49,7 @@
 \newcommand{\exerciseBack}{\addtocounter{cExercise}{-1}}
 \newcommand{\exerciseAdd}{\stepcounter{cExercise}}
 \newcommand{\doExercise}[3][0mm]{\begin{exampleblock}{\exercise #2}\wrap{\rule{0pt}{#1}}#3\end{exampleblock}}
-
+\newcommand{\doSimpleExercise}[2][0mm]{\begin{exampleblock}{}\wrap{\rule{0pt}{#1}}\structure{\textbf{\exercise} #2}\end{exampleblock}}
 
 
 %------ contexts  ---------------------------------------------------------
@@ -801,3 +801,13 @@
 \newcommand{\code}[2][]{\lstinline[basicstyle=\ttfamily\relsize{-0.5},columns=fullflexible,keepspaces,#1]±#2±}
 \newcommand{\mcode}[1]{\text{\code{#1}}}
 \newcommand{\bash}[1]{\lstinline[basicstyle=\ttfamily\relsize{-0.5}\color{darkgreen},keywordstyle=\bf\sffamily\color{purple},columns=fullflexible,keepspaces,literate=*]±#1±}
+
+
+
+\newcommand{\uppbox}[3][20mm]{\tikz{
+  \node[black!15,fill=black!15,minimum width=#1,align=left](title){\textbf{{\footnotesize #2}}};
+  \node[black!15,fill=black!15,left,xshift=4mm]at(title.east){\textbf{{\footnotesize #2}}};
+  \node[blue!60!cyan,right] at(title.west){\textbf{{\footnotesize #2}}};
+  \node[below,inner sep=2mm,fill=white,xshift=2mm](box)at(title.south){\includegraphics[width=#1]{#3}};
+  \node[fit=(title)(box),draw=black,inner sep=0pt]{};
+}}
