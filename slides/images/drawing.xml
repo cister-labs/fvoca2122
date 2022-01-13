@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE nta PUBLIC '-//Uppaal Team//DTD Flat System 1.1//EN' 'http://www.it.uu.se/research/group/darts/uppaal/flat-1_2.dtd'>
+<nta>
+	<declaration>// Place global declarations here.
+clock x,y,z;
+chan press, done, hit, go, next;</declaration>
+	<template>
+		<name x="5" y="5">Lamp</name>
+		<declaration>// Place local declarations here.</declaration>
+		<location id="id0" x="382" y="195">
+			<name x="365" y="212">bright</name>
+		</location>
+		<location id="id1" x="280" y="195">
+			<name x="272" y="212">low</name>
+		</location>
+		<location id="id2" x="161" y="195">
+			<name x="144" y="212">off</name>
+		</location>
+		<init ref="id2"/>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id2"/>
+			<label kind="guard" x="204" y="178">y&gt;=5</label>
+			<label kind="synchronisation" x="204" y="195">press?</label>
+		</transition>
+		<transition>
+			<source ref="id0"/>
+			<target ref="id2"/>
+			<label kind="synchronisation" x="255" y="136">press?</label>
+			<nail x="382" y="136"/>
+			<nail x="161" y="136"/>
+		</transition>
+		<transition>
+			<source ref="id1"/>
+			<target ref="id0"/>
+			<label kind="guard" x="314" y="178">y&lt;5</label>
+			<label kind="synchronisation" x="306" y="195">press?</label>
+		</transition>
+		<transition>
+			<source ref="id2"/>
+			<target ref="id1"/>
+			<label kind="synchronisation" x="204" y="229">press?</label>
+			<label kind="assignment" x="204" y="246">y:=0</label>
+			<nail x="187" y="246"/>
+			<nail x="255" y="246"/>
+		</transition>
+	</template>
+	<template>
+		<name>User</name>
+		<location id="id3" x="0" y="0">
+			<name x="-17" y="17">idle</name>
+		</location>
+		<init ref="id3"/>
+		<transition>
+			<source ref="id3"/>
+			<target ref="id3"/>
+			<label kind="synchronisation" x="-17" y="-76">press!</label>
+			<nail x="34" y="-51"/>
+			<nail x="-34" y="-51"/>
+		</transition>
+	</template>
+	<template>
+		<name>Worker</name>
+		<location id="id4" x="136" y="0">
+			<name x="153" y="-17">work</name>
+			<label kind="invariant" x="153" y="0">z&lt;=60</label>
+		</location>
+		<location id="id5" x="0" y="0">
+			<name x="-51" y="-8">rest</name>
+		</location>
+		<init ref="id5"/>
+		<transition>
+			<source ref="id4"/>
+			<target ref="id5"/>
+			<label kind="guard" x="51" y="-59">z&gt;=10</label>
+			<label kind="synchronisation" x="51" y="-42">done!</label>
+			<nail x="68" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id5"/>
+			<target ref="id4"/>
+			<label kind="synchronisation" x="59" y="25">go!</label>
+			<label kind="assignment" x="59" y="42">z:=0</label>
+			<nail x="68" y="25"/>
+		</transition>
+	</template>
+	<template>
+		<name>Hammer</name>
+		<location id="id6" x="119" y="0">
+			<name x="109" y="-34">busy</name>
+		</location>
+		<location id="id7" x="0" y="0">
+			<name x="-10" y="-34">free</name>
+		</location>
+		<init ref="id7"/>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id6"/>
+			<label kind="guard" x="178" y="-25">x&gt;=1</label>
+			<label kind="synchronisation" x="178" y="-8">hit!</label>
+			<label kind="assignment" x="178" y="9">x:=0</label>
+			<nail x="170" y="25"/>
+			<nail x="170" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id6"/>
+			<target ref="id7"/>
+			<label kind="guard" x="42" y="-59">y&gt;=5</label>
+			<label kind="synchronisation" x="42" y="-42">done?</label>
+			<nail x="59" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id7"/>
+			<target ref="id6"/>
+			<label kind="synchronisation" x="51" y="25">go?</label>
+			<label kind="assignment" x="25" y="42">x:=0, y:=0</label>
+			<nail x="59" y="25"/>
+		</transition>
+	</template>
+	<template>
+		<name>Nail</name>
+		<location id="id8" x="187" y="0">
+			<name x="170" y="17">done</name>
+		</location>
+		<location id="id9" x="93" y="0">
+			<name x="76" y="17">half</name>
+		</location>
+		<location id="id10" x="0" y="0">
+			<name x="-8" y="17">up</name>
+		</location>
+		<init ref="id10"/>
+		<transition>
+			<source ref="id8"/>
+			<target ref="id10"/>
+			<label kind="synchronisation" x="76" y="-51">next?</label>
+			<nail x="187" y="-51"/>
+			<nail x="0" y="-51"/>
+		</transition>
+		<transition>
+			<source ref="id9"/>
+			<target ref="id8"/>
+			<label kind="synchronisation" x="127" y="0">hit?</label>
+		</transition>
+		<transition>
+			<source ref="id10"/>
+			<target ref="id9"/>
+			<label kind="synchronisation" x="34" y="0">hit?</label>
+		</transition>
+	</template>
+	<template>
+		<name>SwitchA</name>
+		<location id="id11" x="144" y="0">
+			<name x="144" y="-34">on</name>
+			<label kind="invariant" x="144" y="17">x&lt;=2</label>
+		</location>
+		<location id="id12" x="0" y="0">
+			<name x="-17" y="-34">off</name>
+		</location>
+		<init ref="id12"/>
+		<transition>
+			<source ref="id11"/>
+			<target ref="id12"/>
+			<label kind="guard" x="59" y="-51">x&gt;=1</label>
+			<label kind="synchronisation" x="68" y="-34">out!</label>
+			<nail x="102" y="-34"/>
+			<nail x="51" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id12"/>
+			<target ref="id11"/>
+			<label kind="synchronisation" x="68" y="17">in?</label>
+			<label kind="assignment" x="59" y="34">x:=0</label>
+			<nail x="51" y="34"/>
+			<nail x="102" y="34"/>
+		</transition>
+	</template>
+	<template>
+		<name>SwitchB</name>
+		<location id="id13" x="144" y="0">
+			<name x="144" y="-34">on</name>
+			<label kind="invariant" x="144" y="17">x&lt;=2</label>
+		</location>
+		<location id="id14" x="0" y="0">
+			<name x="-17" y="-34">off</name>
+		</location>
+		<init ref="id14"/>
+		<transition>
+			<source ref="id13"/>
+			<target ref="id14"/>
+			<label kind="guard" x="34" y="-51">x&lt;=1 and x&lt;2</label>
+			<label kind="synchronisation" x="59" y="-34">s-off?</label>
+			<nail x="102" y="-34"/>
+			<nail x="51" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id14"/>
+			<target ref="id13"/>
+			<label kind="synchronisation" x="59" y="17">s-on?</label>
+			<label kind="assignment" x="59" y="34">x:=0</label>
+			<nail x="51" y="34"/>
+			<nail x="102" y="34"/>
+		</transition>
+	</template>
+	<template>
+		<name>SwitchC</name>
+		<location id="id15" x="144" y="0">
+			<name x="144" y="-34">on</name>
+			<label kind="invariant" x="144" y="17">x&lt;3</label>
+		</location>
+		<location id="id16" x="0" y="0">
+			<name x="-17" y="-34">off</name>
+		</location>
+		<init ref="id16"/>
+		<transition>
+			<source ref="id15"/>
+			<target ref="id16"/>
+			<label kind="guard" x="34" y="-51">x&lt;=1 and x&lt;2</label>
+			<label kind="synchronisation" x="59" y="-34">s-off?</label>
+			<nail x="102" y="-34"/>
+			<nail x="51" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id16"/>
+			<target ref="id15"/>
+			<label kind="synchronisation" x="59" y="17">s-on?</label>
+			<label kind="assignment" x="59" y="34">x:=0</label>
+			<nail x="51" y="34"/>
+			<nail x="102" y="34"/>
+		</transition>
+	</template>
+	<template>
+		<name>SwitchD</name>
+		<location id="id17" x="144" y="0">
+			<name x="144" y="-34">on</name>
+			<label kind="invariant" x="144" y="17">x&lt;=2</label>
+		</location>
+		<location id="id18" x="0" y="0">
+			<name x="-17" y="-34">off</name>
+		</location>
+		<init ref="id18"/>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="212" y="-17">in?</label>
+			<label kind="assignment" x="212" y="0">x:=0</label>
+			<nail x="204" y="25"/>
+			<nail x="204" y="-25"/>
+		</transition>
+		<transition>
+			<source ref="id17"/>
+			<target ref="id18"/>
+			<label kind="guard" x="59" y="-51">x&gt;=1</label>
+			<label kind="synchronisation" x="68" y="-34">out!</label>
+			<nail x="102" y="-34"/>
+			<nail x="51" y="-34"/>
+		</transition>
+		<transition>
+			<source ref="id18"/>
+			<target ref="id17"/>
+			<label kind="synchronisation" x="68" y="17">in?</label>
+			<label kind="assignment" x="59" y="34">x:=0</label>
+			<nail x="51" y="34"/>
+			<nail x="102" y="34"/>
+		</transition>
+	</template>
+	<system>// Place template instantiations here.
+//Lamp = Lamp();
+// List one or more processes to be composed into a system.
+system Lamp, User;
+    </system>
+	<queries>
+		<query>
+			<formula></formula>
+			<comment></comment>
+		</query>
+	</queries>
+</nta>
