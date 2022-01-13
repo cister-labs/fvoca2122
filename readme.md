@@ -13,7 +13,7 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   - Temporal logic
   - Static verification using UPPAAL
 
-2. __Requirements__
+2. __Reasoning over Requirements__
   - First Order Logic
   - SAT and SMT solvers 
   - _Automatic_ theorem proving using Z3
@@ -34,9 +34,9 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 ### Slides
 
 <ul>
-  <li><a href="slides/...">
+  <li> <!-- <a href="slides/..."> -->
     TBD
-  </a></li>
+  <!-- </a> --> </li>
 </ul>
 
 
