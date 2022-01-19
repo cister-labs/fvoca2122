@@ -1,0 +1,130 @@
+\documentclass[aspectratio=169]{beamer}
+
+\input{macros/beamerconf}
+\input{macros/preamble}
+\input{macros/macros}
+
+
+\setLecture{3}{Hoare Logic}
+
+% \title{
+% 	RAMDE -- Requirements and Model-driven Engineering 
+% 	}
+% \author{David Pereira \and Jos\'{e} Proen\c{c}a}
+% \institute{CISTER -- ISEP \\ Porto, Portugal}
+% \date{MScCCSE 2020/21}
+
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+
+\section{A While Language}
+
+\newcommand{\kw}[1]{\structure{\text{#1}}}
+
+\begin{slide}{While$^{Int}$ -- Syntax}
+\small
+
+\begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ x ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
+  \tag{int-expr}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
+ ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
+  \tag{command}
+\end{align*}
+
+Assume operators to be left associative.
+\\Use `\{' and `\}' to clarify precedence when necessary.
+
+\end{slide}
+
+
+
+\begin{slide}{While$^{Int}$ -- natural semantics}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
+
+%skip
+\typerule{skip}%
+  {\shrk}{\pair{\kw{skip},s} \leadsto s}
+\msep % assign
+\typerule{assign}%
+  {\alert{\pair{E,s}\leadsto s'}}%
+  {\pair{x{:=}E,s} \leadsto s[x\mapsto s']}
+\msep % seq
+\typerule{seq}%
+  {\pair{C_1,s}\leadsto s' \quad \pair{C_2,s'}\leadsto s''}%
+  {\pair{C_1;C_2\,,\,s} \leadsto s''}
+\\[5mm] % if-then
+\typerule{if-then}%
+  {\alert{\pair{B,s}\leadsto \kw{true}} \quad \pair{C_t,s}\leadsto s'}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
+\msep % if-else
+\typerule{if-else}%
+  {\alert{\pair{B,s}\leadsto \kw{false}} \quad \pair{C_f,s}\leadsto s'}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
+\\[5mm] % while-false
+\typerule{while-false}%
+  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+  {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s'}
+\msep % while-true
+\typerule{while-true}{\alert{\pair{B,s}\leadsto \kw{true}} \quad
+                      \pair{C,s}\leadsto s' \quad
+                      \pair{\kw{while }B\kw{ do }C,s'}\leadsto s''}%
+         {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s''}
+\end{slide}
+
+\begin{slide}{While$^{Int}$ -- booleans and integers}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
+
+
+\styperule[b]%
+  {\shrk}{\pair{x,s}\leadsto s(x)}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{false}}{\pair{B\land B',s} \leadsto \kw{false}}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{true}\quad \pair{B',s}\leadsto s'}{\pair{B\land B',s} \leadsto s'}
+\msep
+$\cdots$
+\end{slide}
+
+
+\begin{slide}{While$^{Int}$ with assertions -- Syntax}
+\small
+\begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
+  \tag{int-expr}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
+    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+  \tag{command}\\
+  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+\end{align*}
+
+Assume operators to be left associative.
+\\Use `\{' and `\}' to clarify precedence when necessary.
+
+\end{slide}
+
+
+
+\end{document}
