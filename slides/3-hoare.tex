@@ -34,7 +34,7 @@
   \\
   B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
   \tag{boolean-expr}\\
-  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
   \tag{int-expr}\\
   C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
  ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
@@ -141,7 +141,7 @@ Assume operators to be left associative.
   \\
   B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
   \tag{boolean-expr}\\
-  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
   \tag{int-expr}\\
   C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
     ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
