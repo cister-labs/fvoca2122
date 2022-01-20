@@ -32,7 +32,7 @@
   \\
   n &~\in~ \text{Numerals}
   \\
-  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ x ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
   \tag{boolean-expr}\\
   E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
   \tag{int-expr}\\
@@ -47,8 +47,43 @@ Assume operators to be left associative.
 \end{slide}
 
 
+\begin{slide}{Natural Semantics -- booleans and integers}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
 
-\begin{slide}{While$^{Int}$ -- natural semantics}
+
+\typerule[b]{var}%
+  {\shrk}{\alert{\pair{x,s}\leadsto s(x)}}
+\msep
+\typerule[b]{true}%
+  {\shrk}{\alert{\pair{\kw{true},s}\leadsto \kw{true}}}
+\msep
+\typerule[b]{false}%
+  {\shrk}{\alert{\pair{\kw{false},s}\leadsto \kw{false}}}
+\msep
+\typerule[b]{int}%
+  {\shrk}{\alert{\pair{n,s}\leadsto n}}
+\\[5mm]
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{false}}{\pair{B\land B',s} \leadsto \kw{false}}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{true}\quad \pair{B',s}\leadsto s'}{\pair{B\land B',s} \leadsto s'}
+\\[5mm]
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{true}}{\pair{B\lor B',s} \leadsto \kw{true}}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{false}\quad \pair{B',s}\leadsto s'}{\pair{B\lor B',s} \leadsto s'}
+\\[5mm]
+\styperule[c]%
+  {\pair{E,s}\leadsto n \quad \pair{E',s}\leadsto n'}{\pair{E \odot E',s} \leadsto n\odot n'}%
+  ~~where $\odot \in \set{+,-,*}$
+\end{slide}
+
+
+\begin{slide}{Natural Semantics -- commands}
 \small 
 \centering
 \newcommand{\msep}{~~~~~~}
@@ -58,8 +93,8 @@ Assume operators to be left associative.
   {\shrk}{\pair{\kw{skip},s} \leadsto s}
 \msep % assign
 \typerule{assign}%
-  {\alert{\pair{E,s}\leadsto s'}}%
-  {\pair{x{:=}E,s} \leadsto s[x\mapsto s']}
+  {\alert{\pair{E,s}\leadsto n}}%
+  {\pair{x{:=}E,s} \leadsto s[x\mapsto n]}
 \msep % seq
 \typerule{seq}%
   {\pair{C_1,s}\leadsto s' \quad \pair{C_2,s'}\leadsto s''}%
@@ -83,22 +118,17 @@ Assume operators to be left associative.
          {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s''}
 \end{slide}
 
-\begin{slide}{While$^{Int}$ -- booleans and integers}
-\small 
-\centering
-\newcommand{\msep}{~~~~~~}
 
 
-\styperule[b]%
-  {\shrk}{\pair{x,s}\leadsto s(x)}
-\msep
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{false}}{\pair{B\land B',s} \leadsto \kw{false}}
-\msep
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{true}\quad \pair{B',s}\leadsto s'}{\pair{B\land B',s} \leadsto s'}
-\msep
-$\cdots$
+\begin{slide}{What can go wrong?}
+  \begin{block}{Assuming a well written program}
+    \begin{itemize}
+      \item using an undefined variable
+      \item loops never end
+      \item the result is unexpected
+      \item \ldots
+    \end{itemize}
+  \end{block}
 \end{slide}
 
 
@@ -109,7 +139,7 @@ $\cdots$
   \\
   n &~\in~ \text{Numerals}
   \\
-  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
   \tag{boolean-expr}\\
   E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E ~~|~~ -E
   \tag{int-expr}\\
