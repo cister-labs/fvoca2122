@@ -194,12 +194,14 @@ And a \structure{timed bisimulation} if its converse is also a timed simulation.
 
 \begin{exampleblock}{Example}
 \centering
-\wrap{\includegraphics[width=6cm]{./images/bis1.jpg}}
+% \wrap{\includegraphics[width=6cm]{./images/bis1.jpg}}
+\wrap{\uppbox[50mm]{W1-Z1}{./images/bis1.jpg}}
 ~~~~
 \wrap{W1 bisimilar to Z1?}
 \end{exampleblock}
 
 \visible<2>{
+\vspace*{-6mm}
 \begin{align*}
 \pair{\pair{W1,\{x\mapsto 0\}}, \pair{Z1,\{x\mapsto 0\}} } \in R
 \end{align*}
@@ -348,36 +350,55 @@ also notice that
 
 \end{slide}
 
-%----------------------------------------------------------------------------------
+
+
+
+% \uppbox[2.8cm]{\Large $A \Box\, \varphi$}{./images/AA.jpg}~~
+% \uppbox[2.8cm]{$A \Diamond \, \varphi$}{./images/AE.jpg}
+
+
 \begin{slide}{Expressing properties: \textsc{Uppaal}}
 \small \centering
 
-~\\
-\begin{tabular}{cc}
-  \Large $A \Box\, \varphi$ & \Large $A \Diamond \, \varphi$ \\
- \includegraphics[width=2.8cm]{./images/AA.jpg} &
- \hspace{1cm} \includegraphics[width=2.8cm]{./images/AE.jpg}
-\end{tabular}
+\uppbox[2.8cm]{\Large $A \Box\, \varphi$}{./images/AA.jpg}~
+\uppbox[2.8cm]{\Large $A \Diamond \, \varphi$}{./images/AE.jpg}~~~~~
+\uppbox[2.8cm]{\Large $E \Box\, \varphi$}{./images/EA.jpg}~
+\uppbox[2.8cm]{\Large $E \Diamond\, \varphi$}{./images/EE.jpg}
 
-~\\[2mm]
-
-% \begin{block}{$E \Box\, \varphi$ and $E \Diamond\, \varphi$}
-\begin{tabular}{cc}
-  \Large $E \Box\, \varphi$ & \Large $E \Diamond\, \varphi$ \\
- \includegraphics[width=2.8cm]{./images/EA.jpg} &   \hspace{1cm} \includegraphics[width=2.8cm]{./images/EE.jpg}
-\end{tabular}
-% \end{block}
 \end{slide}
 
 %----------------------------------------------------------------------------------
+% \begin{slide}{Expressing properties: \textsc{Uppaal}}
+% \small \centering
+
+% ~\\
+% \begin{tabular}{cc}
+%   \Large $A \Box\, \varphi$ & \Large $A \Diamond \, \varphi$ \\
+%  \includegraphics[width=2.8cm]{./images/AA.jpg} &
+%  \hspace{1cm} \includegraphics[width=2.8cm]{./images/AE.jpg}
+% \end{tabular}
+
+% ~\\[2mm]
+
+% % \begin{block}{$E \Box\, \varphi$ and $E \Diamond\, \varphi$}
+% \begin{tabular}{cc}
+%   \Large $E \Box\, \varphi$ & \Large $E \Diamond\, \varphi$ \\
+%  \includegraphics[width=2.8cm]{./images/EA.jpg} &   \hspace{1cm} \includegraphics[width=2.8cm]{./images/EE.jpg}
+% \end{tabular}
+% % \end{block}
+% \end{slide}
+
+%----------------------------------------------------------------------------------
 \begin{slide}{Expressing properties: \textsc{Uppaal}}
 \small \centering
 
+\uppbox[5cm]{\Large $\varphi\, \leadsto\, \psi$}{./images/LeadsTo.jpg}
+
 % \begin{block}{$\varphi\, \leadsto\, \psi$}
-\begin{center}
-  \Large $\varphi\, \leadsto\, \psi$ \\
- \includegraphics[width=5cm]{./images/LeadsTo.jpg} 
- \end{center}
+% \begin{center}
+%   \Large $\varphi\, \leadsto\, \psi$ \\
+%  \includegraphics[width=5cm]{./images/LeadsTo.jpg} 
+%  \end{center}
 % \end{block}
 
 \begin{exampleblock}{Example}
