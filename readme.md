@@ -1,4 +1,6 @@
-# Course structure
+# FVOCA - Formal Verification of Critical Applications
+
+## Course structure
 This course teaches the basic principles of Model-Driven Engineering - MDE. Students should learn:
 
 <!-- 
@@ -29,7 +31,7 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 # Syllabus
  -->
 
-# Material
+## Material
 
 ### Slides
 
@@ -81,7 +83,8 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   [![link to pdf](assets/img/PDF.png)](https://www.researchgate.net/publication/228689169_Modelling_and_analysis_of_communicating_systems)
  -->
 
-# Pragmatics
+
+## Pragmatics
 
 
 ### Evaluation
