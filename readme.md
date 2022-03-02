@@ -15,17 +15,17 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   - Temporal logic
   - Static verification using UPPAAL
 
-2. __Reasoning over Requirements__
-  - First Order Logic
-  - SAT and SMT solvers 
-  - _Automatic_ theorem proving using Z3
-  - Dependent types and certified programming
-  - _Interactive_ theorem proving using Coq
-
-3. __Program verification__
+2. __Program verification__
+  - First Order Logic Revisites
+  - Abstract Program Semantics
   - Design by Contract and Hoare Logic
   - Verification of annotated programs
-  - Runtime Verification
+
+3. __Reasoning over Programs__
+  - SAT and SMT solvers 
+  - _Automatic_ theorem proving using Z3
+  - Introduction to _Interactive_ theorem proving using Coq
+
 
 <!-- 
 # Syllabus
@@ -91,7 +91,7 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 
  * __Final mark__ = Project (60%) + Exam (40%)
 
-The project will be performed in groups of students, addressing the practical aspects involving model checking and theorem proving. The exam will evaluate the student’s knowledge on the theoretical aspects.
+The project will be performed in groups of 2 students, addressing the practical aspects involving model checking and theorem proving. The exam will evaluate the student’s knowledge on the theoretical aspects.
 
 
 <!-- 
