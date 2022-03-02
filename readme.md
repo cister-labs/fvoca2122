@@ -16,7 +16,7 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   - Static verification using UPPAAL
 
 2. __Program verification__
-  - First Order Logic Revisites
+  - First Order Logic Revisited
   - Abstract Program Semantics
   - Design by Contract and Hoare Logic
   - Verification of annotated programs

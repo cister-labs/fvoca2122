@@ -1,0 +1,241 @@
+%\documentclass[handout]{beamer}
+\documentclass[aspectratio=169]{beamer}
+\usepackage{etex} % fixes new-dimension error
+
+\input{macros/beamerconf}
+\input{macros/preamble}
+\input{macros/macros}
+
+%----------------------------------------------------------------------------
+\usepackage{graphicx,amsmath}
+\usepackage{stmaryrd} % cf. interleave
+\usepackage{booktabs}
+%\usepackage{./macros/myisolatin1}
+\usepackage{amscd}
+
+\usepackage{alltt}
+%------ using xy ------------------------------------------------------------
+\usepackage[all]{xy}
+%\def\larrow#1#2#3{\xymatrix{ #3 & #1 \ar[l] _-{#2} }}
+\def\larrow#1#2#3{\xymatrix{ #3 & #1 \ar[l] _--{#2} }}
+\def\rarrow#1#2#3{\xymatrix{ #1 \ar[r]^-{#2} & #3 }}
+\def\arLaw#1#2#3#4#5{
+\xymatrix{
+        #1      \ar@/^1pc/[rr]^-{#4} &
+        #5 &
+        #2      \ar@/^1pc/[ll]^-{#3}
+}}
+\def\arLeq#1#2#3#4{\arLaw{#1}{#2}{#3}{#4}\leq}
+%------ using pstricks (rnode etc) ------------------------------------------
+% \usepackage{pstricks,pst-node,pst-text,pst-3d}
+%------ using color ---------------------------------------------------------
+
+\definecolor{goldenrod}{rgb}{.80392 .60784 .11373}
+\definecolor{darkgoldenrod}{rgb}{.5451 .39608 .03137}
+\definecolor{brown}{rgb}{.15 .15 .15}
+\definecolor{darkolivegreen}{rgb}{.33333 .41961 .18431}
+%
+%
+\def\gold#1{{\goldenrod #1}}
+% \def\alert#1{{\darkgoldenrod #1}}
+% \def\alert#1{{\alert{#1}}}
+%\def\brw#1{{\brown #1}}
+% \def\structure#1{{\blue #1}}
+% \def\tstructure#1{\textbf{\darkblue #1}}
+%%\def\gre#1{{\green #1}}
+\def\gre#1{{\darkolivegreen #1}}
+\def\gry#1{{\textcolor{gray}{#1}}}
+\def\rdb#1{{\red #1}}
+\def\st{\mathbf{.}\,}
+\def\laplace#1#2{*\txt{\mbox{ \fcolorbox{black}{myGray}{$\begin{array}{c}\mbox{#1}\\\\#2\\\\\end{array}$} }}}
+%\newcommand{\galois}[2]{#1\; \dashv\; #2}
+
+\def\eqm{\mathbin{\equiv}}                     
+\def\noeqm{\mathbin{\not\!\equiv}}  
+%\newcommand{\flam}[2]{\lambda_{#1}\; .\; #2}
+\def\existential#1#2{\exists_{#1}\;.\; #2}
+\def\existencial#1#2{\exists_{#1}\;.\; #2}
+
+\def\pv#1#2{\langle #1 \rangle #2}
+\def\nc#1#2{[#1]#2}
+\def\pvo#1#2{\langle \! \! \! \langle #1 \rangle \! \! \! \rangle\, #2}
+\def\nco#1#2{\llbracket #1 \rrbracket #2}
+\def\cvg#1{\llbracket \downarrow \rrbracket #1}
+\def\cvgr#1#2{\llbracket #1 \downarrow \rrbracket #2}
+\def\cvgl#1#2{\llbracket \downarrow  #1 \rrbracket #2}
+\def\cvglr#1#2{\llbracket \downarrow  #1 \downarrow \rrbracket #2}
+\def\lfp#1#2{\mu {#1}\, .\, {#2}}
+\def\lpf#1#2{\mu {#1}\, .\, {#2}}
+\def\gfp#1#2{\nu {#1}\, .\, {#2}}
+\def\gpf#1#2{\nu {#1}\, .\, {#2}}
+\def\mset#1{\vvv #1 \vvv}
+\def\vvv{\vert \! \vert}
+\def\mnc#1{\vvv [#1] \vvv}
+\def\mpv#1{\vvv \langle #1 \rangle \vvv}
+\def\bcomp#1{#1^{\text{c}}}
+\def\eqm{\mathbin{\simeq}}
+\def\noeqm{\mathbin{\not\!\simeq}}
+\def\universal#1#2{\forall_{#1}\;.\; #2}
+\def\existential#1#2{\exists_{#1}\;.\; #2}
+\def\oexistential#1#2{\exists^{1}_{#1}\;.\; #2}
+\def\MM{\mathcal{M}}
+\def\uppaal{\textsc{Uppaal}}
+\def\cc#1{\mathcal{C}(#1)}
+\def\R{\mathcal{R}}
+\def\TL#1{\mathcal{T}(#1)}
+\def\ET#1{\mathsf{ExecTime(#1)}}
+
+
+
+\begin{document}
+
+\setLectureBasic{Formal Verification of Critical Applications}
+\frame[plain]{\titlepage}
+
+% \title{
+%   Time-critical reactive systems \\ (modelling )  }
+% \frame[plain]{\titlepage}
+
+%slides de motivacao a retirar se aparecerem primeiro os do mCRL2
+
+% \section{Motivation}
+% \begin{frame}[label=conclusion, standout]{Conclusion}
+% Awesome slide
+% \end{frame}
+
+%----------------------------------------------------------------------------------
+\begin{slide}{Last semester @ RAMDE}\label{xxx}
+\small
+
+  \frsplitt{
+  \begin{itemize}
+    \item High-level overview of requirements and associated processes
+    \\[5mm]
+    \item Mathematical Preliminaries
+    \begin{itemize}
+      \item Basic mathematical notations
+      \item Set theory
+      \item PropositionalLogic
+      % \begin{itemize}
+      %   \item Syntax, semantics, and reasoning
+      % \end{itemize}
+      \item \alert{First Order Logic}
+      % \begin{itemize}
+      %   \item Syntax, semantics, and reasoning
+      % \end{itemize}
+      % \item The Z3 automatic theorem prover
+      % \begin{itemize}
+      %   \item Rise4fun interface: get acquainted with the tool
+      %   \item Python API: automating search for solutions
+      % \end{itemize}
+    \end{itemize}
+  \end{itemize}
+  }{
+  \begin{itemize}
+    \item Behavioural modelling with \alert{mCRL2}
+    \begin{itemize}
+      {
+      \item \emph{Process algebra}
+      % \item Single component
+      % \begin{itemize}
+      %   \item State diagrams and Flow charts
+      %   \item Formal modelling: Automata, \alert{Process Algebra in mCRL2}
+      % \end{itemize}
+      % \item Many components
+  %     \begin{itemize}
+  %       \item Communication diagrams and Sequence
+  % diagrams
+  %       \item Formal modelling: Process algebra with interactions
+  %     \end{itemize}
+      }
+      \item Equivalences
+      % \begin{itemize}
+      %   \item (Bi)similarity
+      %   \item Realisability
+      % \end{itemize}
+      \item \alert{Verification}
+      % \begin{itemize}
+      %   \item Verification of requirements
+      %   \item Formal modelling: modal logics
+      %   \item Tools: model checking with mCRL2
+      % \end{itemize}
+    \end{itemize}
+
+    \item Requirement analysis with \alert{EARS}
+  \end{itemize}
+  }
+\end{slide}
+
+
+%\end{document}
+% fim slides motivacao
+
+
+\begin{slide}{Course structure}
+  \centering
+  ~\\[0mm]
+
+  \begin{enumerate}
+    \item \textbf{Real-time models}
+    \begin{itemize}
+      \item Timed Automata and Hybrid Automata
+      \item Temporal logic
+      \item Static verification using \alert{UPPAAL}
+    \end{itemize}
+
+    \item \textbf{Program verification}
+    \begin{itemize}
+      \item First Order Logic revisited
+      \item Abstract Program Semantics
+      \item Design by Contract and Hoare Logic
+      \item Verification of annotated programs
+      % \item Runtime Verification
+    \end{itemize}
+
+    \item \textbf{Requirements}
+    \begin{itemize}
+      \item SAT and SMT solvers 
+      \item \emph{Automatic} theorem proving using \alert{Z3}
+      % \item Dependent types and certified programming
+      \item Introduction to \emph{Interactive} theorem proving using \alert{Coq}
+    \end{itemize}
+  \end{enumerate}
+
+\end{slide}
+
+
+
+\begin{slide}{Pragmatics}
+  \bigskip
+
+  \myblock{\url{https://cister- labs.github.io/fvoca2122}}
+
+  \begin{block}{Final mark = Project (60\%) + Exam (40\%)}
+    \begin{itemize}
+      \item Groups of 2 students
+      \item Project in 2 parts
+      \item Homework's evaluation included in the project
+    \end{itemize}
+  \end{block}
+
+  \begin{block}{The Team}
+    \frsplit{
+    \begin{itemize}
+    \item David Pereira (drp)
+    \item José Proença (pro)
+    \item Eduardo Tovar (emt)
+    \end{itemize}
+    }{
+    \begin{itemize}
+    \item Microsoft Teams
+    \item Email (@isep.ipp.pt)
+    \end{itemize}
+    }
+  \end{block}
+\end{slide}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\end{document}
