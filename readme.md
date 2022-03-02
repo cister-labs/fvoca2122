@@ -73,7 +73,9 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   by Lenny Delligatti
   [![link to pdf](assets/img/PDF.png)](https://app.ute.edu.ec/content/4915-114-4-1-6-19/SysML%20Distilled_%20A%20Brief%20Guide%20-%20Lenny%20Delligatti.pdf)
  -->
+
 <!-- 
+
 - [__Reactive Systems: Modelling, Specification and Verification (2007)__](http://www.cambridge.org/us/academic/subjects/computer-science/programming-languages-and-applied-logic/reactive-systems-modelling-specification-and-verification"),
   by Luca Aceto et al.
   [![link to pdf](assets/img/PDF.png)](http://www.cs.ioc.ee/yik/schools/win2007/ingolfsdottir/sv-book-part1.pdf)
@@ -81,7 +83,8 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 - [__Modeling and Analysis of Communicating Systems (2014)__](https://mitpress.mit.edu/books/modeling-and-analysis-communicating-systems),
   by Jan Friso Groote and Mohammad Reza Mousavi
   [![link to pdf](assets/img/PDF.png)](https://www.researchgate.net/publication/228689169_Modelling_and_analysis_of_communicating_systems)
- -->
+
+-->
 
 
 ## Pragmatics
