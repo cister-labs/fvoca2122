@@ -36,9 +36,8 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 ### Slides
 
 <ul>
-  <li> <!-- <a href="slides/..."> -->
-    TBD
-  <!-- </a> --> </li>
+  <li> <a href="slides/0-fvoca-intro.pdf">Introduction</a> </li>
+  <li> ... </li>
 </ul>
 
 
