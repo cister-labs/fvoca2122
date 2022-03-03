@@ -399,7 +399,11 @@ Invariants are the \structure{only} way to force transitions to occur
 
 
 \begin{tabular}{ccc}
-  \includegraphics[width=3cm]{./images/g1.jpg} & \includegraphics[width=3cm]{./images/g2.jpg} &  \includegraphics[width=3cm]{./images/g3.jpg}
+  % \includegraphics[width=3cm]{./images/g1.jpg} & \includegraphics[width=3cm]{./images/g2.jpg} &  \includegraphics[width=3cm]{./images/g3.jpg}
+  % \\
+  \uppboxv[20mm]{Process 1}{images/p1.pdf} &
+  \uppboxv[20mm]{Process 2}{images/p2.pdf} &
+  \uppboxv[20mm]{Process 3}{images/p3.pdf}
 \end{tabular}
 
 \end{block}
@@ -877,6 +881,24 @@ The user presses $in$ \alert{faster and faster}:
 
 \myblock{Time shall pass!}
 
+\end{slide}
+
+
+\begin{slide}{Exercise}
+  \doExercise{Recall our lamp}{
+    {\centering
+    \uppbox[40mm]{Lamp}{./images/Lamp.pdf}
+    \tikz[remember picture,overlay]{%
+      \node[pink!40!purple,font=\sf\tiny,xshift=16mm,yshift=2mm] at (current page.center){y<=3600};}
+
+    }
+    \begin{enumerate}
+      \item Describe a \alert{time-divergent} path, if it exists.
+      \item Describe a \alert{time-convergent} path, if it exists.
+      \item Describe a \alert{timelock} path, if it exists.
+      \item Is this automata \alert{non-zeno}? Justify.
+    \end{enumerate}
+  }
 \end{slide}
 
 

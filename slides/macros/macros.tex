@@ -812,3 +812,11 @@
   \node[below,inner sep=2mm,fill=white,xshift=2mm](box)at(title.south){\includegraphics[width=#1]{#3}};
   \node[fit=(title)(box),draw=black,inner sep=0pt]{};
 }}
+
+\newcommand{\uppboxv}[3][20mm]{\tikz{
+  \node[below,inner sep=2mm,fill=white](box){\includegraphics[height=#1]{#3}};
+  \coordinate[yshift=5mm](top)at(box.north);
+  \node[fit=(top)(box.north west)(box.north east),inner sep=0pt,fill=black!15](title){};
+  \node[blue!60!cyan,right] at(title.west){\textbf{{\footnotesize #2}}};
+  \node[fit=(title)(box),draw=black,inner sep=0pt]{};
+}}
