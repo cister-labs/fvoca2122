@@ -37,7 +37,8 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 
 <ul>
   <li> <a href="slides/0-fvoca-intro.pdf">Introduction</a> </li>
-  <li> <a href="slides/1-TA-modelling.pdf" class="hide">Modelling with Timed Automata</a> </li>
+  <li> <a href="slides/1-TA-modelling.pdf">Modelling with Timed Automata</a> </li>
+  <li> <a href="slides/2-TA-verification.pdf" class="hide">Verification of Timed Automata</a> </li>
   <li> ... </li>
 </ul>
 
