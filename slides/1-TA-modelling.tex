@@ -523,7 +523,7 @@ Process Languages &  & LTS (Labelled Transition Systems)\\
 Introduce \structure{delay transitions} to capture the passage of time within a LTS:
 \begin{align*}
 s \tran{a} s' & \;\; \text{for $a \in Act$, are ordinary transitions due to action occurrence }\\
-s \tran{d} s' &\; \;  \text{for $d \in \R^+$, are \structure{delay} transitions}
+s \tran{d} s' &\; \;  \text{for $d \in \R^{+}_0$, are \structure{delay} transitions}
 \end{align*}
 subject to a number of constraints, eg, 
 \end{block}
@@ -787,7 +787,7 @@ A \structure{timelock} represents a situation that causes time progress to halt 
 
 \begin{center}
   % \includegraphics[width=4.5cm]{./images/SwitchB} 
-  \uppbox[4.5cm]{NoTimelock}{./images/SwitchB} 
+  \uppbox[4.5cm]{Terminal}{./images/SwitchB} 
 \end{center}
 
 State $\pair{on,2}$ is reachable through path 
@@ -803,7 +803,7 @@ and is terminal
 
 \begin{center}
   % \includegraphics[width=4.5cm]{./images/SwitchC} 
-  \uppbox[4.5cm]{Timelock}{./images/SwitchC} 
+  \uppbox[4.5cm]{Timelock - NotTerminal}{./images/SwitchC} 
 \end{center}
 
 State $\pair{on,2}$ is not terminal but has a \structure{convergent} path:

@@ -95,12 +95,17 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 
  * __Final mark__ = Project (60%) + Exam (40%)
 
-The project will be performed in groups of 2 students, addressing the practical aspects involving model checking and theorem proving. The exam will evaluate the student’s knowledge on the theoretical aspects.
+The project will be performed in groups of 2 students, addressing the practical aspects involving model checking and theorem proving, and will include some homework exercises. The exam will evaluate the student’s knowledge on the theoretical aspects.
 
 
-<!-- 
 ### Deadlines
- -->
+
+__Homework__  consists of a PDF report that must be submitted until Sunday @ 23:59 of the following week of being shown during lessons. For example, all exercises presented in the slides used in the week 8 Nov - 12 Nov must be submitted until Sunday 21 Nov.
+__Assignments__ have specific deadlines, mentioned on their instructions.
+The deadlines are summarised below, and may still suffer changes.
+
+ - __20 Mar (Sun) @ 23:59__ - [Slides 1](slides/1-TA-modelling.pdf) (pages 1-37)
+ 
 
 ### Lecturers
 
