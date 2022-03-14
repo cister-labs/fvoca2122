@@ -7,6 +7,7 @@
 \usepackage{url}
 \usepackage[margin=1in]{geometry} 
 \usepackage{amsmath,amsthm,amssymb}
+\usepackage[capitalise]{cleveref}
  
 %\newcommand{\N}{\mathbb{N}}
 %\newcommand{\Z}{\mathbb{Z}}
@@ -37,10 +38,14 @@
 
 \theoremstyle{myplain}
 \newtheorem{myExercise}{Exercise}
+\crefname{myExercise}{Ex.}{Ex.}
+\Crefname{myExercise}{Ex.}{Ex.}
 
 
 \theoremstyle{definition} % no italics
 \newtheorem{subexercise}{}[myExercise]
+\crefname{subexercise}{Ex.}{Ex.}
+\Crefname{subexercise}{Ex.}{Ex.}
 
 \newcommand{\subex}[1]{\begin{subexercise}#1\end{subexercise}}
 
