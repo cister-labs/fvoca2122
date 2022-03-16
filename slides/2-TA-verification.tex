@@ -132,7 +132,7 @@ All results from now on are given over an arbitrary \alert{timed LTS}; they natu
 
 %-------------------------------------------------------------------------------
 \begin{frame}{Traces}
-\doExercise{Write 4 possible traces}{
+\doExercise{Write 4 possible timed traces}{
   \centering
   % \includegraphics[width=7cm]{./images/lamp1.jpg}
   \uppbox[7cm]{Lamp}{./images/Lamp}
@@ -305,8 +305,20 @@ Given a \alert{timed automata}, $ta$, and a \structure{property}, $\phi$, show t
 \small
 
 \begin{block}{State formulae}
+\vspace*{-4mm}
+\begin{align*}
+% \Pi\; ::=\; & \Ac \Boxc\, \Psi\, \mid\, \Ac\Diamondc\, \Psi\, \mid\, \Ec \Boxc\, \Psi\, \mid\, \Ec \Diamondc\, \Psi\, \mid\, \Phi \leadsto  \Psi\
+% % \tag{path}
+% \\[2mm]
+\Psi\; ::=\; & ta.\ell ~|~ g_c ~|~ {\transp{g_d}} ~|~ \texttt{deadlock} ~|~
+  \texttt{not~}\Psi ~|~ \Psi \texttt{ or }\Psi ~|~ \Psi \texttt{ and }\Psi ~|~
+  \Psi \texttt{ imply }\Psi
+  % \tag{state}
+\end{align*}
+
 Any expression which can be evaluated to a boolean value for a state (typically involving the 
 \alert{clock constraints} used for guards and invariants and similar constraints over integer variables):
+\vspace*{-6mm}
 \begin{center}
 \texttt{x >= 8}, \texttt{i == 8 and x < 2}, ...
 \end{center}
@@ -316,8 +328,26 @@ Additionally,
 provided $(\ell, \eta)$ is a state in $\TL{ta}$
 \item \structure{$\texttt{deadlock}$}: $(\ell, \eta) \models \forall_{d \in \R_0^+} .\, \text{there is no transition from} \; \pair{\ell,\eta+d}$ 
 \end{itemize}
+
 \end{block}
 
+\end{slide}
+
+
+
+\begin{slide}{Exercises}
+  \centering
+  \uppbox[7cm]{Lamp}{./images/Lamp}
+
+  \doExercise{Write a state formula}{
+  \vspace*{-8mm}
+  \begin{enumerate}
+    \item The lamp is \texttt{low}
+    \item Not \texttt{off} and $y>25$
+    \item If it is \texttt{low} or \texttt{bright}, then $y\leq 3600$
+  \end{enumerate}
+  }
+  
 \end{slide}
 
 %----------------------------------------------------------------------------------
@@ -332,10 +362,12 @@ provided $(\ell, \eta)$ is a state in $\TL{ta}$
 \begin{block}{Path formulae}
 \begin{align*}
 \Pi\; ::=\; & \Ac \Boxc\, \Psi\, \mid\, \Ac\Diamondc\, \Psi\, \mid\, \Ec \Boxc\, \Psi\, \mid\, \Ec \Diamondc\, \Psi\, \mid\, \Phi \leadsto  \Psi\
-\\[2mm]
-\Psi\; ::=\; & ta.\ell ~|~ g_c ~|~ {\transp{g_d}} ~|~ \texttt{deadlock} ~|~
-  \texttt{not~}\Psi ~|~ \Psi \texttt{ or }\Psi ~|~ \Psi \texttt{ and }\Psi ~|~
-  \Psi \texttt{ imply }\Psi
+% \tag{path}
+% \\[2mm]
+% \Psi\; ::=\; & ta.\ell ~|~ g_c ~|~ {\transp{g_d}} ~|~ \texttt{deadlock} ~|~
+%   \texttt{not~}\Psi ~|~ \Psi \texttt{ or }\Psi ~|~ \Psi \texttt{ and }\Psi ~|~
+%   \Psi \texttt{ imply }\Psi
+%   \tag{state}
 \end{align*}
 
 where
@@ -354,20 +386,6 @@ also notice that
 \end{slide}
 
 
-\begin{slide}{Exercises}
-  \centering
-  \uppbox[7cm]{Lamp}{./images/Lamp}
-
-  \doExercise{Write a path formula}{
-  \vspace*{-8mm}
-  \begin{enumerate}
-    \item The lamp is \texttt{low}
-    \item Not \texttt{off} and $y>25$
-    \item If it is \texttt{low} or \texttt{bright}, then $y\leq 3600$
-  \end{enumerate}
-  }
-  
-\end{slide}
 
 
 % \uppbox[2.8cm]{\Large $A \Box\, \varphi$}{./images/AA.jpg}~~
