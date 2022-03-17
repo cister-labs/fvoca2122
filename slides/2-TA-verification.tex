@@ -511,6 +511,58 @@ Examples\\
 
 
 
+
+\begin{slide}{Exercise: worker, hammer, nail - revisited}
+\small
+\begin{columns}
+\col[.45]{
+  \centering
+  ~\\[2mm]
+  % Requires \usepackage{graphicx}
+  % ~~~~\includegraphics[width=45mm]{./images/WHN.jpg}
+  \uppbox[30mm]{Worker}{./images/Worker.pdf}\\[2mm]
+  \uppbox[30mm]{Hammer}{./images/Hammer.pdf}\\[2mm]
+  \uppbox[30mm]{Nail}{./images/Nail.pdf}\\
+}
+\col[.54]{
+  \doExercise{Write properties and explain them}{
+    \vspace*{-4mm}
+    \begin{enumerate}
+      \item Using $E\Diamond$
+      \item Using $E\Box$
+      \item Using $A\Diamond$
+      \item Using $A\Box$
+      \item Using $\leadsto$
+    \end{enumerate}
+    (Practice in UPPAAL)
+  }
+}
+\end{columns}
+\end{slide}
+
+
+\begin{slide}{Exercise: write formulas}
+  \centering
+  \uppbox[4.5cm]{Lamp}{./images/Lamp}
+
+  \vspace*{-2mm}
+  \doExercise{Write formulas, and say which ones are true}{
+    \vspace*{-8mm}
+    % \begin{multicols}{2}
+    \begin{enumerate}
+      \item The lamp can become bright;
+      \item The lamp will eventually become bright;
+      \item The lamp can never be on for more than 3600s;
+      \item It is possible to never turn on the lamp;
+      \item Whenever the light is bright, the clock $y$ is non-zero;
+      \item Whenever the light is bright, it will eventually become off.
+    \end{enumerate}
+    % \end{multicols}
+    }
+\end{slide}
+
+
+
 \section{Examples: proving mutual exclusion}
 % \section{Case-study: proving mutual exclusion}
 
@@ -525,7 +577,7 @@ Examples\\
 \col[0.35]{
 \begin{center}
 % \includegraphics[width=4cm]{./images/tg1.jpg}
-\uppbox[5cm]{Train}{./images/Train} 
+\uppbox[5cm]{Train(id)}{./images/Train} 
 \end{center}
 }
 
@@ -554,7 +606,7 @@ Examples\\
 \col[0.35]{
 \begin{center}
 % \includegraphics[width=4cm]{./images/tg1.jpg}
-\uppbox[5cm]{Train}{./images/Train} 
+\uppbox[5cm]{Train(id)}{./images/Train} 
 \end{center}
 }
 
@@ -608,26 +660,6 @@ Examples\\
 %
 %
 
-
-\begin{slide}{Exercises}
-  \centering
-  \uppbox[4.5cm]{Lamp}{./images/Lamp}
-
-  \vspace*{-2mm}
-  \doExercise{Write formulas, and say which ones are true}{
-    \vspace*{-8mm}
-    % \begin{multicols}{2}
-    \begin{enumerate}
-      \item The lamp can become bright;
-      \item The lamp will eventually become bright;
-      \item The lamp can never be on for more than 3600s;
-      \item It is possible to never turn on the lamp;
-      \item Whenever the light is bright, the clock $y$ is non-zero;
-      \item Whenever the light is bright, it will eventually become off.
-    \end{enumerate}
-    % \end{multicols}
-    }
-\end{slide}
 
 %----------------------------------------------------------------------------------
 \begin{slide}{Mutual exclusion}
