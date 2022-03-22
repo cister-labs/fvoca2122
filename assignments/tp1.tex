@@ -37,7 +37,7 @@
 }
 
 \descrbox{Deadline}{
-  tba @ 23:59 (Sunday) 
+  tba %@ 23:59 (Sunday) 
 }
 
 
@@ -83,12 +83,15 @@
 %\end{itemize}
 %\end{exercise}
 
+\newcommand{\compn}[1]{\textsf{\textcolor{purple}{#1}}\xspace}
+\newcommand{\chn}[1]{\textsf{\textcolor{teal}{#1}}\xspace}
+
 \section*{Motor controller in a Railway system}
 
 A railway company produces signalling systems that are used in critical systems. These must provide enough evidence over their reliability and correctness over time to comply with the heavy certification processes.
 
 This assignment is a simplification of on ongoing use-case of an European project, depicted in \cref{fig:global-architecture}.
-In this use-case a critical motor that rotates left and right interacts with a controller. This controller runs on a resource-constrained device with a real-time OS. In turn, a remote dashboard sends commands and receives updates to/from the controller. The goal of this assignment is to analyse the behaviour only of controller.
+In this use-case a critical \compn{motor} that rotates left and right interacts with a \compn{controller}. This controller runs on a resource-constrained device with a real-time OS. In turn, a remote \compn{dashboard} sends \chn{commands} and receives \chn{updates} to/from the controller. The goal of this assignment is to analyse the behaviour mainly of the \compn{controller}, interacting with the \compn{motor} and the \compn{dashboard}.
 
 \begin{figure}[tb]
   \centering
@@ -120,8 +123,25 @@ In this use-case a critical motor that rotates left and right interacts with a c
   \label{fig:global-architecture}
 \end{figure}
 
-The overall behaviour of the controller is summarised in \cref{fig:motor-controllor-beh}.
-Initially ...
+\myparagraph{Controller behaviour}
+The overall behaviour of the \compn{controller} is summarised in \cref{fig:motor-controllor-beh}.
+Initially the \compn{controller} is idle, where he must remain for at least 1000ms to perform some bootstrap self-tests. It can then receive a \chn{start} command to become ready to actuate.
+Once it is ready, it can receive a \chn{left} (resp. \chn{right}) command from the \compn{dashboard}, which will trigger an instruction \chn{move-left} (resp. \chn{move-right}) to the \compn{motor}.
+The \compn{controller} then waits between 4000ms and 5000ms -- if a report is received from the \compn{motor} signalling that it reached the movement \chn{limit}, the \compn{controller} will become idle and will notify the \compn{dashboard} that the \compn{motor} stopped. Otherwise, after 5000s the controller raises an \chn{error} (more info on this below) and goes to a fallback state.
+While in a fallback state, the \compn{controller} waits for the \compn{dashboard} to send a \chn{reset} command to become idle again.
+
+
+\myparagraph{Raising errors}
+Everytime an error is raised by the \compn{controller}
+an \chn{error} message must be sent to the dashboard and
+a \chn{stop} message must be sent to the \compn{motor}.
+
+\myparagraph{Critical implementation with 2 controllers}
+A more complex version of this system uses 2 \compn{controllers} for redundancy, both interacting with the \compn{dashboard} and the \compn{motor}.
+Every 100ms each of the two \compn{controllers} should check if the other controller is in the same state, using shared variables. After 3 failed attempts this controller should raise an error and go to the fallback state.
+
+To be able to test this \compn{controllers}, the \compn{dashboard} can also send a \chn{fail} command to any of the \compn{controllers}, rendering it useless.
+
 
 \begin{figure}[tb]
   \centering
@@ -175,18 +195,35 @@ Initially ...
 % \[\includegraphics[width=\textwidth]{RFID-conveyor.pdf}\]
 
 \begin{myExercise} \label{ex:req}
-  Rewrite the requirements below following the EARS approach [note to self: use colours to emphasise channels and components]
+  Write a set of desirable requirements following the EARS approach based on the description of this system.
 \end{myExercise}
 
 
 
 \begin{myExercise} \label{ex:model}
-  Model a concrete scenario of this controller as an UPPAAL model, i.e., with ... of your choice.
-Use an automata for each ..., and
-parameterise the model by (at least) the following constants:
+  Model this system as an UPPAAL model \textbf{without} the extension of the second controller.
+  Include three concrete scenarios of this controller, i.e., assume that the dashboard performs three different fixed sequences of instructions at specific points in time.
+  This is an open task: you should implement at least a \compn{controller}, a \compn{motor}, and a \compn{dashboard}, and you may use extra automata if needed. You can also include new assumptions or functionality, provided that you explain them.
+
+  Your model should be parameterised by (at least) the following global constants:
 \begin{itemize}
-  \item Maximum attempts...;
-  \item Minimum and maximum time at each phase;
+  % \item Maximum attempts;
+  \item Minimum and maximum time at each phase...;
+\end{itemize}
+% Note that there may be several approaches, some more detailed than others, to model this system. 
+Justify clearly your decisions (assumptions and abstractions) made in this modelling exercise.
+\end{myExercise}
+
+
+\begin{myExercise} \label{ex:model2}
+  Create an updated model based on the previous one that uses 2 controllers, as explained above.
+
+  Model three concrete scenarios as before, but also considering fault injections.
+
+  Your model should be further parameterised by (at least) the following global constants:
+\begin{itemize}
+  \item Maximum attempts to ...;
+  % \item Minimum and maximum time at each phase;
 \end{itemize}
 % Note that there may be several approaches, some more detailed than others, to model this system. 
 Justify clearly your decisions (assumptions and abstractions) made in this modelling exercise.
