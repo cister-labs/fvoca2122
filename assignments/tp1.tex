@@ -90,7 +90,7 @@
 
 A railway company produces signalling systems that are used in critical systems. These must provide enough evidence over their reliability and correctness over time to comply with the heavy certification processes.
 
-This assignment is a simplification of on ongoing use-case of an European project, depicted in \cref{fig:global-architecture}.
+This assignment is a simplification of an ongoing use-case of an European project, depicted in \cref{fig:global-architecture}.
 In this use-case a critical \compn{motor} that rotates left and right interacts with a \compn{controller}. This controller runs on a resource-constrained device with a real-time OS. In turn, a remote \compn{dashboard} sends \chn{commands} and receives \chn{updates} to/from the controller. The goal of this assignment is to analyse the behaviour mainly of the \compn{controller}, interacting with the \compn{motor} and the \compn{dashboard}.
 
 \begin{figure}[tb]
@@ -125,9 +125,14 @@ In this use-case a critical \compn{motor} that rotates left and right interacts 
 
 \myparagraph{Controller behaviour}
 The overall behaviour of the \compn{controller} is summarised in \cref{fig:motor-controllor-beh}.
-Initially the \compn{controller} is idle, where he must remain for at least 1000ms to perform some bootstrap self-tests. It can then receive a \chn{start} command to become ready to actuate.
+Initially the \compn{controller} is idle, where it must remain for at least 1000ms to perform some bootstrap self-tests. It can then receive a \chn{start} command to become ready to actuate.
 Once it is ready, it can receive a \chn{left} (resp. \chn{right}) command from the \compn{dashboard}, which will trigger an instruction \chn{move-left} (resp. \chn{move-right}) to the \compn{motor}.
-The \compn{controller} then waits between 4000ms and 5000ms -- if a report is received from the \compn{motor} signalling that it reached the movement \chn{limit}, the \compn{controller} will become idle and will notify the \compn{dashboard} that the \compn{motor} stopped. Otherwise, after 5000s the controller raises an \chn{error} (more info on this below) and goes to a fallback state.
+
+The \compn{controller} then checks every 400ms if the \compn{motor} reached the movement \chn{limit} or if it detected some \chn{error}. This check is made using a shared register between the \compn{motor} and the \compn{controller}.
+If the \compn{controller} detects that the limit is reached between 4000ms and 5000ms after the move instruction is sent, it becomes idle and notifies the \compn{dashboard}. Otherwise it 
+raises an \chn{error} (more info on this below) and goes to a fallback state.
+%
+If the motor is misbehaving, it should not take more than 6000ms to raise an error since the move-instruction is sent.
 While in a fallback state, the \compn{controller} waits for the \compn{dashboard} to send a \chn{reset} command to become idle again.
 
 
@@ -138,9 +143,10 @@ a \chn{stop} message must be sent to the \compn{motor}.
 
 \myparagraph{Critical implementation with 2 controllers}
 A more complex version of this system uses 2 \compn{controllers} for redundancy, both interacting with the \compn{dashboard} and the \compn{motor}.
-Every 100ms each of the two \compn{controllers} should check if the other controller is in the same state, using shared variables. After 3 failed attempts this controller should raise an error and go to the fallback state.
+Every 100ms each of the two \compn{controllers} should check if the other controller is in the same state, using shared variables. After 3 failed attempts this controller should raise an error and go to its fallback state.
 
-To be able to test this \compn{controllers}, the \compn{dashboard} can also send a \chn{fail} command to any of the \compn{controllers}, rendering it useless.
+To be able to test this pair of \compn{controllers}, the \compn{dashboard} can also send a \chn{fail} command to any of the \compn{controllers}, rendering it useless.
+Once a controller is faulty, it should not take more than 6000ms to raise an error since a successful \emph{start}, \emph{left}, or \emph{right} instruction is sent, or a movement \emph{limit} is reached.
 
 
 \begin{figure}[tb]
@@ -195,7 +201,7 @@ To be able to test this \compn{controllers}, the \compn{dashboard} can also send
 % \[\includegraphics[width=\textwidth]{RFID-conveyor.pdf}\]
 
 \begin{myExercise} \label{ex:req}
-  Write a set of desirable requirements following the EARS approach based on the description of this system.
+  Write a set of 5 or more desirable requirements following the EARS approach based on the description of this system. If you want, you can make new assumptions not described above, making it explicit what is new.
 \end{myExercise}
 
 
@@ -208,25 +214,30 @@ To be able to test this \compn{controllers}, the \compn{dashboard} can also send
   Your model should be parameterised by (at least) the following global constants:
 \begin{itemize}
   % \item Maximum attempts;
-  \item Minimum and maximum time at each phase...;
+  \item Minimum and maximum time at the idle and start phase;
+  \item Minimum and maximum time to expect the limit to be reached;
+  \item Periodicity to read the status of the the motor;
 \end{itemize}
 % Note that there may be several approaches, some more detailed than others, to model this system. 
-Justify clearly your decisions (assumptions and abstractions) made in this modelling exercise.
+Describe this UPPAAL model and the 3 scenarios in your report,
+justifying clearly your decisions (assumptions and abstractions) made in this modelling exercise.
 \end{myExercise}
 
 
 \begin{myExercise} \label{ex:model2}
   Create an updated model based on the previous one that uses 2 controllers, as explained above.
 
-  Model three concrete scenarios as before, but also considering fault injections.
+  Model three concrete scenarios as before, but now also considering fault injections.
 
   Your model should be further parameterised by (at least) the following global constants:
 \begin{itemize}
-  \item Maximum attempts to ...;
+  \item Number of attempts to incorrectly detect a wrong state before raising an error;
+  \item Periodicity to check for the state.
   % \item Minimum and maximum time at each phase;
 \end{itemize}
 % Note that there may be several approaches, some more detailed than others, to model this system. 
-Justify clearly your decisions (assumptions and abstractions) made in this modelling exercise.
+Describe this new UPPAAL model and the 3 scenarios in your report,
+justifying clearly your decisions (assumptions and abstractions) made in this modelling exercise.
 \end{myExercise}
 
 
@@ -236,13 +247,13 @@ Justify clearly your decisions (assumptions and abstractions) made in this model
 
   \subex{Express a property in UPPAAL's CTL logic for each item below. Fix a particular set of parameters (c.f. \cref{ex:model}), and say if each property holds or not (or if it takes too much time), and explain why.
   \begin{enumerate}
-    \item ...
-    \item ...
-    \item ...
+    \item It is possible to move the engine 3 time to the left in less than 15000ms;
+    \item Whenever a fallback state is reached, it must take at least 6000ms until the motor can turn again to the left.
+    \item Until a scenario is finished, the system does not deadlock.
   \end{enumerate}
   }
 
-  \subex{For each property from \cref{ex:ctl-req} find different values for the parameters, which satisfy and and reject them. If a given property is always true of false, justify informally why.}
+  \subex{Select 5 properties from \cref{ex:ctl-req}, and for each of them find different values for the parameters that satisfy and that reject them. Use the model from \cref{ex:model2} if available, or from \cref{ex:model} otherwise. If a given property is always true of false, justify informally why.}
 
 \end{myExercise}
 
