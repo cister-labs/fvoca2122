@@ -1,0 +1,463 @@
+\documentclass[aspectratio=169]{beamer}
+
+\input{macros/beamerconf}
+\input{macros/preamble}
+\input{macros/macros}
+
+\usepackage{macros/bussproofs}
+
+
+\setLecture{3}{Operational Semantics}
+
+% \title{
+% 	RAMDE -- Requirements and Model-driven Engineering 
+% 	}
+% \author{David Pereira \and Jos\'{e} Proen\c{c}a}
+% \institute{CISTER -- ISEP \\ Porto, Portugal}
+% \date{MScCCSE 2020/21}
+
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+
+\section{Why look into formal semantics}
+
+\newcommand{\kw}[1]{\structure{\text{#1}}}
+
+\begin{slide}{Programming languages, syntax, and semantics}
+  \begin{block}{When we first look into a programming language...}
+  ... at first, we typically look into its syntax, but:
+  \begin{itemize}
+    \item 
+    \item 
+  \end{itemize}
+    
+  \end{block}
+\end{slide}
+
+\begin{slide}{What will we be learning in this module of FVOCA?}
+\begin{block}{Milestones to be achieved (Phase 1):}
+\begin{itemize}
+  \item Select a target programming language (abstract syntax)
+  \item Select a semantics for that language (abstract semantics)
+  \item Mathematically prove properties of programs written in the chosen language
+\end{itemize}
+\end{block}
+
+\begin{block}{Milestones to be achieved (Phase 2):}
+\begin{itemize}
+  \item How to extend the abstract semantics to allow logical annotations that characterise code
+  \item What logics and proof rules can be used to reason about annotated programs abstract semantics
+  \item Learn how to automate generation of proof obligations and use theorem provers in practice 
+\end{itemize}
+\end{block}
+
+  
+\end{slide}
+
+
+\begin{slide}{While$^{Int}$ -- Syntax}
+\small
+
+\begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+  \tag{int-expr}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
+ ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
+  \tag{command}
+\end{align*}
+
+Assume operators to be left associative.
+\\Use `\{' and `\}' to clarify precedence when necessary.
+
+\end{slide}
+
+
+\begin{slide}{Natural Semantics -- booleans and integers}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
+
+
+\typerule[b]{var}%
+  {\shrk}{\alert{\pair{x,s}\leadsto s(x)}}
+\msep
+\typerule[b]{true}%
+  {\shrk}{\alert{\pair{\kw{true},s}\leadsto \kw{true}}}
+\msep
+\typerule[b]{false}%
+  {\shrk}{\alert{\pair{\kw{false},s}\leadsto \kw{false}}}
+\msep
+\typerule[b]{int}%
+  {\shrk}{\alert{\pair{n,s}\leadsto n}}
+\\[5mm]
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{false}}{\pair{B\land B',s} \leadsto \kw{false}}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{true}\quad \pair{B',s}\leadsto s'}{\pair{B\land B',s} \leadsto s'}
+\\[5mm]
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{true}}{\pair{B\lor B',s} \leadsto \kw{true}}
+\msep
+\styperule[b]%
+  {\pair{B,s}\leadsto \kw{false}\quad \pair{B',s}\leadsto s'}{\pair{B\lor B',s} \leadsto s'}
+\\[5mm]
+\styperule[c]%
+  {\pair{E,s}\leadsto n \quad \pair{E',s}\leadsto n'}{\pair{E \odot E',s} \leadsto n\odot n'}%
+  ~~where $\odot \in \set{+,-,*}$
+\end{slide}
+
+
+\begin{slide}{Natural Semantics -- commands}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
+
+%skip
+\typerule{skip}%
+  {\shrk}{\pair{\kw{skip},s} \leadsto s}
+\msep % assign
+\typerule{assign}%
+  {\alert{\pair{E,s}\leadsto n}}%
+  {\pair{x{:=}E,s} \leadsto s[x\mapsto n]}
+\msep % seq
+\typerule{seq}%
+  {\pair{C_1,s}\leadsto s' \quad \pair{C_2,s'}\leadsto s''}%
+  {\pair{C_1;C_2\,,\,s} \leadsto s''}
+\\[5mm] % if-then
+\typerule{if-then}%
+  {\alert{\pair{B,s}\leadsto \kw{true}} \quad \pair{C_t,s}\leadsto s'}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
+\msep % if-else
+\typerule{if-else}%
+  {\alert{\pair{B,s}\leadsto \kw{false}} \quad \pair{C_f,s}\leadsto s'}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
+\\[5mm] % while-false
+\typerule{while-false}%
+  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+  {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s'}
+\msep % while-true
+\typerule{while-true}{\alert{\pair{B,s}\leadsto \kw{true}} \quad
+                      \pair{C,s}\leadsto s' \quad
+                      \pair{\kw{while }B\kw{ do }C,s'}\leadsto s''}%
+         {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s''}
+\end{slide}
+
+\begin{slide}{Structural Operational Semantics (SOS)}
+\begin{block}{Focus of SOS}
+Structural Operational Semantics have as main focus the individual steps of the execution of the program.
+\end{block}
+
+\begin{block}{Differences wrt. Natural Semantics}
+Like Natural Semantics, the steps are defined as transitions, but the right hand-side of the transition may not be the final state, but rather some intermediate step of computaion.
+\end{block}
+\end{slide}
+
+\begin{slide}{Structural Operational Semantics -- expressions}
+\small 
+Expressions are evaluated as functions from variable identifiers onto integers (similarly to natural semantics). However, in SOS, all reduction steps are accounted in the reduction rules and consider all intermediate states.
+
+\centering
+\newcommand{\msep}{~~~~~~}
+
+\typerule{var}%
+  {s(x) = n}%
+  {\pair{x,s} \Longrightarrow \pair{n,s}}
+\msep % seq
+\typerule{add/mul/sub/div-l}%
+  {\pair{E_1,s}\Longrightarrow \pair{E'_1,s}}%
+  {\pair{E_1 \odot E_2\,,\,s} \Longrightarrow \pair{E'_1 \odot E_2,s}}
+\\[5mm]
+\typerule{add/mul/sub/div-r}%
+  {\pair{E_2\,,\,s} \Longrightarrow \pair{E'_2,s}}%
+  {\pair{n \odot E_2\,,\,s} \Longrightarrow \pair{n \odot E'_2,s}}
+\msep % if-then
+\typerule{add/mul/sub/div}%
+  {n \odot_{\mathbb{I}} m = p \in \mathbb{I}}%
+  {\pair{n \odot m\,,\,s} \Longrightarrow \pair{p,s}}
+\\[5mm]
+\flushleft 
+where $\odot \in \{+,-,*\}$ and $\odot_\mathbb{I}$ stands for the concrete operation on the domain of integers. Please note that this semantics is not considering errors, e.g., when faced with a division by 0. That requires changing the notion of state so that it incorporates the concept of "program going wrong".
+%\msep % if-else
+%\typerule{if-else}%
+%  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+%  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \Longrightarrow \pair{C_f,s}}
+%\\[5mm] % while-false
+%\typerule{while-false}%
+%  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+%  {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s'}
+%\msep % while-true
+%\typerule{while}%
+%  {}
+%  {\pair{\kw{while }B\kw{ do }C\,,\,s} \Longrightarrow \pair{\kw{if}~B~\kw{then}~(C;\kw{while}~B~\kw{do}~C)~\kw{else}~\kw{skip},s}}
+\end{slide}
+
+\begin{slide}{Example with expressions}
+\small
+Let's assume two variables, $foo$ and $bar$, a state $s : Var \to \mathbb{I}$ such that $s(foo) = 4$ and $s(bar) = 3$. Let's now provide a reasoning for the calculation of $(foo + 2) \times (bar + 1)$
+
+\begin{prooftree}
+  \AxiomC{$\pair{foo+2,s} \Longrightarrow \pair{E'_1,s}$}
+  \LeftLabel{(mul-l)}
+  \UnaryInfC{$\pair{(foo + 2) \times (bar + 1),s} \Longrightarrow \pair{E'_1\times(bar + 1),s}$}
+\end{prooftree}
+
+We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
+
+\begin{prooftree}
+  \AxiomC{$\pair{foo,s} \Longrightarrow \pair{E''_1,s}$}
+  \LeftLabel{(add-l)}
+  \UnaryInfC{$\pair{foo + 2,s} \Longrightarrow \pair{E''_1 + 2,s}$}
+\end{prooftree}
+
+Now it is enough to apply the rule that maps values to variable identifiers.
+
+\begin{prooftree}
+  \AxiomC{$s(foo) = 4$}
+  \LeftLabel{(var)}
+  \UnaryInfC{$\pair{foo,s} \Longrightarrow \pair{4,s}$}
+\end{prooftree}
+ But we are not yet finished; lets continue in the next slide!
+\end{slide}
+
+\begin{slide}{Example with expressions}
+\small
+Now that we know the previous derivations we can proceed with the substitution and make a reduction step using the (add) rule.
+\begin{prooftree}
+  \AxiomC{$\pair{4+2,s} \Longrightarrow \pair{6,s}$}
+  \LeftLabel{(add)}
+  \UnaryInfC{$\pair{(4 + 2) \times (bar + 1),s} \Longrightarrow \pair{6\times(bar + 1),s}$}
+\end{prooftree}
+
+We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
+
+\begin{prooftree}
+  \AxiomC{$s(bar) = 3$}
+  \LeftLabel{(var)}
+  \UnaryInfC{$\pair{bar,s} \Longrightarrow \pair{3,s}$}
+  \LeftLabel{(add-l)}
+  \UnaryInfC{$\pair{bar+1,s} \Longrightarrow \pair{E'_2,s}$}
+  \LeftLabel{(add-r)}
+  \UnaryInfC{$\pair{6\times(bar + 1),s} \Longrightarrow \pair{6 \times E'_2 + 2,s}$}
+\end{prooftree}
+
+We can now proceed as before, and obtain the desired derivation.
+
+\end{slide}
+
+\begin{slide}{Structural Operational Semantics -- commands}
+\small 
+\centering
+\newcommand{\msep}{~~~~~~}
+
+%skip
+%\typerule{skip}%
+%  {\shrk}{\pair{\kw{skip},s} \leadsto s}
+%\msep % assign
+\typerule{assign-1}%
+  {\alert{\pair{E,s}\Longrightarrow \pair{E',s}}}%
+  {\pair{x{:=}E,s} \Longrightarrow \pair{x{:=}E',s}}
+\msep % seq
+\typerule{assign-2}%
+  {}%
+  {\pair{x{:=}n,s} \Longrightarrow \pair{\kw{skip},s[x\mapsto n]}}
+\msep % seq
+\typerule{seq}%
+  {\pair{C_1,s}\Longrightarrow \pair{C'_1,s'}}%
+  {\pair{C_1;C_2\,,\,s} \Longrightarrow \pair{C'_1;C_2,s'}}
+\msep
+\typerule{seq-skip}%
+  {}%
+  {\pair{\kw{skip};C_2\,,\,s} \Longrightarrow \pair{C_2,s}}
+\\[5mm] % if-then
+\typerule{if-then}%
+  {\alert{\pair{B,s}\leadsto \kw{true}}}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \Longrightarrow \pair{C_t,s}}
+\msep % if-else
+\typerule{if-else}%
+  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \Longrightarrow \pair{C_f,s}}
+\\[5mm] % while-false
+%\typerule{while-false}%
+%  {\alert{\pair{B,s}\leadsto \kw{false}}}%
+%  {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s'}
+%\msep % while-true
+\typerule{while}%
+  {}
+  {\pair{\kw{while }B\kw{ do }C\,,\,s} \Longrightarrow \pair{\kw{if}~B~\kw{then}~(C;\kw{while}~B~\kw{do}~C)~\kw{else}~\kw{skip},s}}
+\end{slide}
+
+
+
+
+\begin{slide}{Example}
+Let us start with a very simple example (and ignore \kw{skip} command in the application of the transition rules for simplicity.
+\begin{prooftree}
+\AxiomC{$\pair{x:=1,s} \Longrightarrow \pair{\kw{skip},s[x \mapsto 1]}$}
+\UnaryInfC{$\pair{x:=1;y:=2,s[x \mapsto 1]} \Longrightarrow \pair{y:=2,s[x \mapsto 1]}$}
+\UnaryInfC{$\pair{x:=1;y:=2;z:=3,s} \Longrightarrow \pair{y:=2;z:=3,s[x \mapsto 1]}$ }
+\end{prooftree}
+Truth to be told, we just need one proof step (using associativity of sequence)\footnote{We will learn more about associativity and other properties on upcoming lectures.}!
+\begin{prooftree}
+\AxiomC{$\pair{x:=1,s} \Longrightarrow \pair{\kw{skip},s[x \mapsto 1]}$}
+\UnaryInfC{$\pair{x:=1;y:=2;z:=3,s} \Longrightarrow \pair{y:=2;z:=3,s[x \mapsto 1]}$ }
+\end{prooftree}
+\end{slide}
+
+\begin{slide}{Suggested exercises for practicing - I}
+\begin{block}{Construct your own command and semantic rules}
+As a first exercise, I would like to appeal to your criativity and do the following:
+\begin{itemize}
+  \item select a command that is not available in our simple imperative language, provide its abstract syntax and either Natural Semantics or Structural Operational Semantics transition rules/steps; 
+  \item in the case when the new command's transition rules are defined by translating into combinations of primitive rules, try to provide an alternative formulation that does not use those primitive rules.
+  \item if needed, you can also extend the type of state of a program. Remember that currently on a function mapping variable identifiers to values in $\mathbb{I}$ is defined.
+\end{itemize}
+\end{block}  
+\end{slide}
+
+\begin{slide}{Suggested exercises for practicing - II}
+\begin{block}{Construct your own formal semantics interpreter}
+As a second exercise, I would like to appeal to your passion for coding do the following:
+\begin{itemize}
+  \item select the programming language that most suits you. For simplicity I suggest Python, and highly suggest that you avoid system programming languages such as C.
+  \item find a representation for the abstract syntax of expressions and commands using the facilities of the chosen programming language
+  \item  experiment implementing a Natural Semantics interpreter
+  \item by the way, next laboratory language will be dedicated to these to exercises, so don't forget to bring laptops!
+\end{itemize}
+\end{block}  
+\end{slide}
+
+
+\begin{slide}{Formal Semantics are Fun, but what can we do with them?}
+
+\begin{block}{Certified Compilation}
+One particular important application of formal semantics is certified compilation, that is, the process of transforming high-level source code into a machine level instruction set if guaranteed (i.e., mathematically proved), is correct.
+\end{block}
+
+\begin{block}{Steps}
+\begin{itemize}
+  \item Define an instruction set and the mathematic meaning of its instructions, i.e., the rules for a formal semantics
+  \item Define a translation function
+  \item Prove that if $\pair{C,s} \Longrightarrow_{hlc} \pair{\kw{skip},s'}$, then $\pair{\mathcal{T}(C),s} \Longrightarrow_{llc} \pair{NOOP,s'}$\footnote{$NOOP$ means an abstraction of no-operation, which can be represented differently depending on the instruction set.}
+\end{itemize}  
+\end{block}
+
+  
+\end{slide}
+
+ 
+\section{Interesting Extensions}
+
+
+\begin{slide}{While$^{Int}$ -- Adding variables declarations and procedure definitions}
+\small
+
+\begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  p &~\in~ \text{Procedure Identifiers}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+  \tag{int-expr}\\
+  D_v &~::=~ \kw{var}~x~::=E; D_v? 
+  \tag{var-decl}\\
+  D_p &~::=~ \kw{proc}~ p~ \kw{is}~ C; D_p? 
+  \tag{var-decl}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C ~~|~~\kw{call}~p
+  \tag{command}
+\end{align*}
+
+\end{slide}
+
+\begin{slide}{Aborting execution}
+Add a new keyword to commands:
+\begin{align*}
+  C &~::=~ \kw {skip} ~~|~~ \ldots  ~~|~~ \kw{abort}
+  \tag{command}\\
+\end{align*}
+Introduce the following rule in the semantics:\\
+\typerule{abort-NS}%
+  {}%
+  {\pair{\kw{abort},s} \Longrightarrow \bot}
+\\[5mm] 
+\typerule{abort-SOS}%
+  {}%
+  {\pair{\kw{abort},s} \Longrightarrow \pair{\kw{skip},\bot}}
+%  where $\bot$ is an abstraction for "error state".
+\end{slide}
+
+\begin{slide}{Non-Determinism}
+Add a new keyword to commands:
+\begin{align*}
+  C &~::=~ \kw {skip} ~~|~~ \ldots  ~~|~~ C_1~\kw{or}~C_2
+  \tag{command}\\
+\end{align*}
+Introduce the following rule in the semantics:\\
+\typerule{ndet-l}%
+  {\pair{C_1,s} \Longrightarrow \pair{C'_1,s'}}%
+  {\pair{C_1~\kw{or}~C_2,s} \Longrightarrow \pair{C'_1~\kw{or}~C_2,s'}}
+\\[5mm]
+\typerule{ndet-l}%
+  {\pair{C_2,s} \Longrightarrow \pair{C'_2,s'}}%
+  {\pair{C_1~\kw{or}~C_2,s} \Longrightarrow \pair{C_1~\kw{or}~C'_2,s'}}
+
+%\msep 
+%\typerule{assign}%
+%  {}%
+%  {\pair{\kw{abort},s} \Longrightarrow \pair{\kw{skip},\bot}
+%\end{align*}
+
+\end{slide}
+
+
+\begin{slide}{What can go wrong?}
+  \begin{block}{Assuming a well written program}
+    \begin{itemize}
+      \item using an undefined variable
+      \item loops never end
+      \item the result is unexpected
+      \item \ldots
+    \end{itemize}
+  \end{block}
+\end{slide}
+
+
+\begin{slide}{While$^{Int}$ with assertions -- Syntax}
+\small
+\begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+  \tag{int-expr}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
+    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+  \tag{command}\\
+  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+\end{align*}
+
+Assume operators to be left associative.
+\\Use `\{' and `\}' to clarify precedence when necessary.
+
+\end{slide}
+
+
+
+\end{document}
