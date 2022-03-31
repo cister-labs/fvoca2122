@@ -44,20 +44,19 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 </ul>
 
 
-<!-- 
 ### Exercises and Assignments
 <ul>
-  <li><a href="assignments/a1-sets-pl-fol.pdf">Exercises on Logic (individual)</a>
+<!--   <li><a href="assignments/exercises1.pdf">Exercises on XYZ (individual)</a>
     <ul><li>
-      <a href="assignments/a1-pl-rules.pdf">Compilation of logic rules</a>
+      <a href="assignments/helper1.pdf">Auxiliary notes</a>
     </li>
     </ul>
   </li>
-  <li><a href="assignments/a1-modelling.pdf">A1: Modelling Behaviour (group)</a></li>
-  <li><a href="assignments/a2-verification.pdf">A2: Analysing Behaviour (group)</a></li>
-  <li><a href="assignments/a3-requirements.pdf">A3: Requirement analysis (group)</a></li>
-</ul>
  -->
+
+ <li><a href="assignments/tp1.pdf">TP1: Specification and Verification in Uppaal (group)</a></li>
+</ul>
+
 
 <!-- 
 ### Useful links
@@ -108,6 +107,7 @@ The deadlines are summarised below, and may still suffer changes.
  - __20 Mar (Sun) @ 23:59__ - [Slides 1](slides/1-TA-modelling.pdf) (pages 1-37)
  - __27 Mar (Sun) @ 23:59__ - [Slides 1](slides/1-TA-modelling.pdf) (pages 37-end); [Slides 2](slides/2-TA-verification.pdf) (pages 1-19 except 8)  
  - __3 Apr (Sun) @ 23:59__ - [Slides 2](slides/2-TA-verification.pdf) (pages 8 and 20-end)  
+ - __1 May (Sun) @ 23:59__ - [TP1: Specification and verification in Uppaal](assignments/tp1.pdf)
 
 ### Lecturers
 
