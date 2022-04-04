@@ -30,12 +30,142 @@
   \begin{block}{When we first look into a programming language...}
   ... at first, we typically look into its syntax, but:
   \begin{itemize}
-    \item 
-    \item 
+    \item it just deals with correctly formed sentences;
+    \item syntax is not concerned with soundness; 
+    \item thus, t\textbf{he programmer may get lost if it becomes necessary to check that the specified
+program actually computes the intended operation}
   \end{itemize}
-    
   \end{block}
 \end{slide}
+
+\begin{slide}{Programming languages, syntax, and semantics}
+  \begin{block}{Important note!}
+  It is important that the semantics is \textbf{formal}, \textbf{systematic} and \textbf{verifiable} so that:
+  \begin{itemize}
+    \item the user has access to an unambiguous description of the effect of a program %(\textbf{Specifications in natural language may be more easy to read, but they are also highly ambiguous})
+    \item a starting point for a correct implementation %(\textbf{with the formal semantics at hand, more efficient programs can be written, and code generation improved})
+    \item a basis for program analysis and synthesis, i.e., \textbf{transformation}, \textbf{optimisation}, and \textbf{verification}
+  \end{itemize}
+  \end{block}
+  \begin{block}{Another important note!}
+    actually showing a program to be correct is more work than writing the
+program itself, but it is not a task to be neglected
+  \end{block}
+\end{slide}
+
+\section{States and types of operational semantics}
+
+\begin{slide}{States in formal semantics}
+  \begin{block}{The meaning of programs}
+  \begin{itemize}
+    \item Semantics of programming languages deals with the meaning of programs that execute on a computer, \textbf{runnig in memory} and \textbf{using various resources};
+    \item to \textbf{express execution correctly}, we need also to \textbf{consider the status of the memory
+during execution}.
+  \end{itemize}
+  \end{block}
+  
+  \begin{block}{State of a program}
+    \begin{itemize}
+    \item The \textbf{state of the memory} is fundamental in all definitions of semantics  
+    \item we will consider only \textbf{programs that compute through variables}, hence \textbf{we are not interested in the contents of actual physical addresses}
+    \item will \textbf{abstract from the actual memory} and focus on the \textbf{representation of the values stored in variables}
+    \end{itemize}
+  \end{block}
+\end{slide}
+
+\begin{slide}{States in formal semantics}
+\begin{block}{How we will represent states}
+We will use the notation $$[x_1 \mapsto v_1, x_2 \mapsto v_2, \ldots, x_n \mapsto v_n], $$ where $x_i \in \mathcal{V}$ are variable names (identifiers) and $v_i \in \mathcal{D}$ represent values that are assigned to the variables (in the scope of this class we will be considering mostly integeres and Booleans)  
+\end{block}
+\end{slide}
+
+\section*{Types of Operational Semantics}
+
+\begin{slide}{Classification of Operational Semantics}
+  \begin{block}{Operational Semantics}
+    Focus on how the effect of a computation is produced: it is an abstraction of machine execution in that it expresses the meaning of a program - running on a machine in a specific state - by returning its result, the output.
+  \end{block}
+  \begin{block}{Denotational Semantics}
+    In this approach, the meaning of a program is a function, that maps the state of the machine before execution to the state after execution.
+  \end{block}
+  \begin{block}{Axiomatic Semantics}
+    With this semantics, the properties of the effect of executing the constructs
+are expressed as assertions
+  \end{block}
+We will focus on (specific) operational semantics and axiomatic semantics!
+\end{slide}
+
+\begin{slide}{Example with Operational Semantics}
+\begin{block}{Looking at the differences in pratice}
+In the next slides we will look into the differences of the approaches with the following toy example
+$$z:= x; x:= y; y := z$$ and assuming the following existing assignment of variables to values:
+\begin{itemize}
+\item $x \mapsto 5$
+\item $y \mapsto 7$
+\item $z \mapsto 0$  
+\end{itemize}
+\end{block}
+\end{slide}
+
+
+\begin{slide}{Example with Operational Semantics}
+%\begin{block}{Formal representation}
+We will be using the notation $\langle p,s \rangle$, where $p$ denotes the program code, and $s$ the state, i.e., the mapping of values to variables names. Also, for now, lets assume that:
+\begin{itemize}
+\item to execute a sequence of statements, typically separated by $;$, execute individual statements from left to right; 
+\item to execute an assignment $x := v$, first calculate the value of $v$ and then assign it to $x$.
+\end{itemize}
+%\end{block}
+\begin{align*}
+  \langle z:= x; x:= y; y := z, [x \mapsto 5,y \mapsto 7,z \mapsto 0]\rangle  & \Rightarrow \\
+  \langle x:= y; y := z, [x \mapsto 5,y \mapsto 7,z \mapsto 5]\rangle  & \Rightarrow \\
+  \langle y := z, [x \mapsto 7,y \mapsto 7,z \mapsto 5]\rangle  & \Rightarrow \\
+  \langle \epsilon, [x \mapsto 7,y \mapsto 5,z \mapsto 5]\rangle
+\end{align*}
+\end{slide}
+
+\begin{slide}{Example with Denotational Semantics}
+ We will be using a mathematical function with the type $State \to State$ to evaluate the code, denoted $S[p]$, considering:
+\begin{itemize}
+\item executing a sequence of statements amounts at function composition, i.e., $S[p_1;p_2] = S[p_1] \circ S[p_2]$
+\item executing an assignment $x := v$ returns the current state where the mapping of the variable $x$ is updated as follows: $S[x:=v](s,y) = s(y)$ if $x \not= y$, or $v$ otherwise, where $s$ is the function representing the state and $y$ a variable being evaluated under the $S$ interpretation.
+\end{itemize}
+\end{slide}
+
+\begin{slide}{Example with Denotational Semantics}
+Getting back to the running example, and using the definition of evaluation of program sequence, we know that $$S[z:= x; x:= y; y := z] = S[z:= x] \circ S[x:= y] \circ S[y := z]$$ Proceeding with the evaluation we have:
+\begin{align*}
+  S[z:= x; x:= y; y := z]([x \mapsto 5,y \mapsto 7,z \mapsto 0]) & =\\
+  S[z:= x] \circ S[x:= y] \circ S[y := z]([x \mapsto 5,y \mapsto 7,z \mapsto 0]) & =\\
+  S[x:= y] \circ S[y := z]([x \mapsto 5,y \mapsto 7,z \mapsto 5]) & =\\
+  S[y := z]([x \mapsto 7,y \mapsto 7,z \mapsto 5]) & =\\
+  [x \mapsto 5,y \mapsto 7,z \mapsto 5]
+\end{align*}
+{\bf Note:} For denotational semantics, the meaning of a program depends only on the program itself. Nostate information is needed to establish a meaning.
+\end{slide}
+
+
+\begin{slide}{Example with Axiomatic Semantics}
+  \begin{block}{Partial Correctness}
+  Axiomatic semantics deals with partial correctness, i.e., it proves the correctness of a program $p$ with respect to its \textbf{pre-} and \textbf{post-conditions}. The usual representation is as follows: $$\{Pre\}\,p\,\{Post\}$$ which in the case of the running example can be instantiated to
+  $$\{x = n \land y = m\}\,z:= x; x:= y; y := z\,\{x = m \land y = n\}$$ that expresses that if the assigned values of $x$ and $y$ are, at the start of the program, $n$ and $m$, respectively, then when the program terminates, it must hold that their values have been swapped.
+  \end{block}
+\end{slide}
+
+\begin{slide}{Example with Axiomatic Semantics}
+Further ahead in this module of FVOCA we will look deeply into axiomatica semantics, typically known as Hoare Logic. For now, lets look into a proof sketch that intuitively shows how the actual proof, with the concrete rules for a well defined syntax of a programming language, could take place
+\begin{align*}
+(P1)~ & \{x = n \land y = m\}\,z := x\,\{z = n \land y = m\} \\
+(P2)~ & \{z = n \land y = m\}\,x := y\,\{z = n \land x = m\} \\
+(P3)~ & \{x = n \land x = m\}\,z := x ; x := y\{z = n \land x = m\} \\
+(P4)~ & \{z = n \land x = m\}\,y := z\,\{y = n \land x = m\} \\
+(P5) & \{x = n \land y = m\}\,z:= x; x:= y; y := z\,\{x = m \land y = n\} \\
+\end{align*}
+However, for more complex cases, this type of approach is not so easy to address:
+$$\{x = n \land y = m\}\,\kw{while}(\kw{true})\,\kw{do}\,\kw{skip}\,\{x = m \land y = n\}$$
+\end{slide}
+
+\section*{So, what we will be learning in FVOCA?}
 
 \begin{slide}{What will we be learning in this module of FVOCA?}
 \begin{block}{Milestones to be achieved (Phase 1):}
@@ -53,10 +183,14 @@
   \item Learn how to automate generation of proof obligations and use theorem provers in practice 
 \end{itemize}
 \end{block}
-
-  
 \end{slide}
 
+\begin{slide}{What will we be learning in this module of FVOCA?}
+Today we will look once again into operational semantics and, in the practical class, start to design and program our own FVOCA interpreters! Focus will be on operational semantics, namely structural operational semantics (we will dive into this type of semantics still in this class!)  
+\end{slide}
+
+
+\section*{A Simple Imperative Language}
 
 \begin{slide}{While$^{Int}$ -- Syntax}
 \small
@@ -78,6 +212,18 @@
 Assume operators to be left associative.
 \\Use `\{' and `\}' to clarify precedence when necessary.
 
+\end{slide}
+
+\section{Natural Semantics - a quick overview}
+
+\begin{slide}{Natural Semantics}
+\begin{block}{A type of operational semantics}
+Natural semantics, aka Big-Step Semantics, are operational semantics that directly give the results of the code under evaluation. They don't consider intermediate steps and therefore are not suited to programming languages with constructs that need fine-grained analysis, e.g., concurrency.
+or concurrency  
+\end{block}
+\begin{block}{Mathematical view of Natural Semantics}
+To make a proper evaluation under the context of natural semantics, we consider a relation $\leadsto$ that maps a configuration of the program $\langle p, s \rangle$ into its final result, which must be a member of the domain (in the case presented here, either Boolean values or integers). The evaluation of a variable $v$ in a state $s$ is denoted $s(v)$.  
+\end{block}
 \end{slide}
 
 
@@ -122,6 +268,7 @@ Assume operators to be left associative.
 \centering
 \newcommand{\msep}{~~~~~~}
 
+
 %skip
 \typerule{skip}%
   {\shrk}{\pair{\kw{skip},s} \leadsto s}
@@ -152,6 +299,8 @@ Assume operators to be left associative.
          {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s''}
 \end{slide}
 
+\section*{Structural Operational Semantics}
+
 \begin{slide}{Structural Operational Semantics (SOS)}
 \begin{block}{Focus of SOS}
 Structural Operational Semantics have as main focus the individual steps of the execution of the program.
@@ -162,10 +311,9 @@ Like Natural Semantics, the steps are defined as transitions, but the right hand
 \end{block}
 \end{slide}
 
-\begin{slide}{Structural Operational Semantics -- expressions}
+\begin{slide}{Structural Operational Semantics -- arithmetic expressions}
 \small 
-Expressions are evaluated as functions from variable identifiers onto integers (similarly to natural semantics). However, in SOS, all reduction steps are accounted in the reduction rules and consider all intermediate states.
-
+Expressions are evaluated as functions from variable identifiers onto integers. The rules are:
 \centering
 \newcommand{\msep}{~~~~~~}
 
@@ -186,7 +334,7 @@ Expressions are evaluated as functions from variable identifiers onto integers (
   {\pair{n \odot m\,,\,s} \Longrightarrow \pair{p,s}}
 \\[5mm]
 \flushleft 
-where $\odot \in \{+,-,*\}$ and $\odot_\mathbb{I}$ stands for the concrete operation on the domain of integers. Please note that this semantics is not considering errors, e.g., when faced with a division by 0. That requires changing the notion of state so that it incorporates the concept of "program going wrong".
+where $\odot \in \{+,-,*\}$ and $\odot_\mathbb{I}$ stands for the concrete operation on the domain of integers. 
 %\msep % if-else
 %\typerule{if-else}%
 %  {\alert{\pair{B,s}\leadsto \kw{false}}}%
@@ -201,57 +349,38 @@ where $\odot \in \{+,-,*\}$ and $\odot_\mathbb{I}$ stands for the concrete opera
 %  {\pair{\kw{while }B\kw{ do }C\,,\,s} \Longrightarrow \pair{\kw{if}~B~\kw{then}~(C;\kw{while}~B~\kw{do}~C)~\kw{else}~\kw{skip},s}}
 \end{slide}
 
-\begin{slide}{Example with expressions}
-\small
-Let's assume two variables, $foo$ and $bar$, a state $s : Var \to \mathbb{I}$ such that $s(foo) = 4$ and $s(bar) = 3$. Let's now provide a reasoning for the calculation of $(foo + 2) \times (bar + 1)$
+\begin{slide}{Structural Operational Semantics -- Boolean expressions}
+\small 
+Expressions are evaluated as functions from variable identifiers onto integers. The rules are:
+\centering
+\newcommand{\msep}{~~~~~~}
 
-\begin{prooftree}
-  \AxiomC{$\pair{foo+2,s} \Longrightarrow \pair{E'_1,s}$}
-  \LeftLabel{(mul-l)}
-  \UnaryInfC{$\pair{(foo + 2) \times (bar + 1),s} \Longrightarrow \pair{E'_1\times(bar + 1),s}$}
-\end{prooftree}
-
-We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
-
-\begin{prooftree}
-  \AxiomC{$\pair{foo,s} \Longrightarrow \pair{E''_1,s}$}
-  \LeftLabel{(add-l)}
-  \UnaryInfC{$\pair{foo + 2,s} \Longrightarrow \pair{E''_1 + 2,s}$}
-\end{prooftree}
-
-Now it is enough to apply the rule that maps values to variable identifiers.
-
-\begin{prooftree}
-  \AxiomC{$s(foo) = 4$}
-  \LeftLabel{(var)}
-  \UnaryInfC{$\pair{foo,s} \Longrightarrow \pair{4,s}$}
-\end{prooftree}
- But we are not yet finished; lets continue in the next slide!
-\end{slide}
-
-\begin{slide}{Example with expressions}
-\small
-Now that we know the previous derivations we can proceed with the substitution and make a reduction step using the (add) rule.
-\begin{prooftree}
-  \AxiomC{$\pair{4+2,s} \Longrightarrow \pair{6,s}$}
-  \LeftLabel{(add)}
-  \UnaryInfC{$\pair{(4 + 2) \times (bar + 1),s} \Longrightarrow \pair{6\times(bar + 1),s}$}
-\end{prooftree}
-
-We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
-
-\begin{prooftree}
-  \AxiomC{$s(bar) = 3$}
-  \LeftLabel{(var)}
-  \UnaryInfC{$\pair{bar,s} \Longrightarrow \pair{3,s}$}
-  \LeftLabel{(add-l)}
-  \UnaryInfC{$\pair{bar+1,s} \Longrightarrow \pair{E'_2,s}$}
-  \LeftLabel{(add-r)}
-  \UnaryInfC{$\pair{6\times(bar + 1),s} \Longrightarrow \pair{6 \times E'_2 + 2,s}$}
-\end{prooftree}
-
-We can now proceed as before, and obtain the desired derivation.
-
+\typerule{not-l}%
+  {\pair{B,s} \Longrightarrow \pair{B',s}}%
+  {\pair{\neg B,s} \Longrightarrow \pair{\neg B',s}}
+\msep % seq
+\typerule{not-true}%
+  {b = \kw{true}}%
+  {\pair{\neg b,s} \Longrightarrow \pair{\kw{false},s}}
+\msep % seq
+\typerule{not-false}%
+  {b = \kw{false}}%
+  {\pair{\neg b,s} \Longrightarrow \pair{\kw{true},s}}
+  \\[5mm]
+\typerule{and/or-l}%
+  {\pair{B_1,s}\Longrightarrow \pair{B'_1,s}}%
+  {\pair{B_1 \odot B_2\,,\,s} \Longrightarrow \pair{B'_1 \odot B_2,s}}
+\msep
+\typerule{and/or-r}%
+  {\pair{B_2\,,\,s} \Longrightarrow \pair{B'_2,s}}%
+  {\pair{b \odot B_2\,,\,s} \Longrightarrow \pair{b \odot B'_2,s}}
+\\[5mm] % if-then
+\typerule{and/or}%
+  {p_1 \odot_{\mathbb{I}} p_2 = p \in \mathbb{B}}%
+  {\pair{p_1 \odot p_2\,,\,s} \Longrightarrow \pair{p,s}}
+\\[5mm]
+\flushleft 
+where $\odot \in \{\land,\lor\}$ and $\odot_\mathbb{B}$ stands for the concrete operation on the domain of integers. 
 \end{slide}
 
 \begin{slide}{Structural Operational Semantics -- commands}
@@ -296,6 +425,58 @@ We can now proceed as before, and obtain the desired derivation.
   {\pair{\kw{while }B\kw{ do }C\,,\,s} \Longrightarrow \pair{\kw{if}~B~\kw{then}~(C;\kw{while}~B~\kw{do}~C)~\kw{else}~\kw{skip},s}}
 \end{slide}
 
+\begin{slide}{Example with expressions}
+\small
+Let's assume two variables, $foo$ and $bar$, a state $s : Var \to \mathbb{I}$ such that $s(foo) = 4$ and $s(bar) = 3$. Let's now provide a reasoning for the calculation of $(foo + 2) \times (bar + 1)$
+
+\begin{prooftree}
+  \AxiomC{$\pair{foo+2,s} \Longrightarrow \pair{E'_1,s}$}
+  \LeftLabel{(mul-l)}
+  \UnaryInfC{$\pair{(foo + 2) \times (bar + 1),s} \Longrightarrow \pair{E'_1\times(bar + 1),s}$}
+\end{prooftree}
+
+We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
+
+\begin{prooftree}
+  \AxiomC{$\pair{foo,s} \Longrightarrow \pair{E''_1,s}$}
+  \LeftLabel{(add-l)}
+  \UnaryInfC{$\pair{foo + 2,s} \Longrightarrow \pair{E''_1 + 2,s}$}
+\end{prooftree}
+
+Now it is enough to apply the rule that maps values to variable identifiers.
+
+\begin{prooftree}
+  \AxiomC{$s(foo) = 4$}
+  \LeftLabel{(var)}
+  \UnaryInfC{$\pair{foo,s} \Longrightarrow \pair{4,s}$}
+\end{prooftree}
+ But we are not yet finished; lets continue in the next slide!
+\end{slide}
+
+\begin{slide}{Example with expressions}
+\small
+Now that we know the previous derivations we can proceed with the substitution and make a reduction tep using the (add) rule.
+\begin{prooftree}
+  \AxiomC{$\pair{4+2,s} \Longrightarrow \pair{6,s}$}
+  \LeftLabel{(add)}
+  \UnaryInfC{$\pair{(4 + 2) \times (bar + 1),s} \Longrightarrow \pair{6\times(bar + 1),s}$}
+\end{prooftree}
+
+We now have to show that the premise actually holds and thus need to find what $E'_1$ is.  
+
+\begin{prooftree}
+  \AxiomC{$s(bar) = 3$}
+  \LeftLabel{(var)}
+  \UnaryInfC{$\pair{bar,s} \Longrightarrow \pair{3,s}$}
+  \LeftLabel{(add-l)}
+  \UnaryInfC{$\pair{bar+1,s} \Longrightarrow \pair{E'_2,s}$}
+  \LeftLabel{(add-r)}
+  \UnaryInfC{$\pair{6\times(bar + 1),s} \Longrightarrow \pair{6 \times E'_2 + 2,s}$}
+\end{prooftree}
+
+We can now proceed as before, and obtain the desired derivation.
+
+\end{slide}
 
 
 
@@ -313,48 +494,6 @@ Truth to be told, we just need one proof step (using associativity of sequence)\
 \end{prooftree}
 \end{slide}
 
-\begin{slide}{Suggested exercises for practicing - I}
-\begin{block}{Construct your own command and semantic rules}
-As a first exercise, I would like to appeal to your criativity and do the following:
-\begin{itemize}
-  \item select a command that is not available in our simple imperative language, provide its abstract syntax and either Natural Semantics or Structural Operational Semantics transition rules/steps; 
-  \item in the case when the new command's transition rules are defined by translating into combinations of primitive rules, try to provide an alternative formulation that does not use those primitive rules.
-  \item if needed, you can also extend the type of state of a program. Remember that currently on a function mapping variable identifiers to values in $\mathbb{I}$ is defined.
-\end{itemize}
-\end{block}  
-\end{slide}
-
-\begin{slide}{Suggested exercises for practicing - II}
-\begin{block}{Construct your own formal semantics interpreter}
-As a second exercise, I would like to appeal to your passion for coding do the following:
-\begin{itemize}
-  \item select the programming language that most suits you. For simplicity I suggest Python, and highly suggest that you avoid system programming languages such as C.
-  \item find a representation for the abstract syntax of expressions and commands using the facilities of the chosen programming language
-  \item  experiment implementing a Natural Semantics interpreter
-  \item by the way, next laboratory language will be dedicated to these to exercises, so don't forget to bring laptops!
-\end{itemize}
-\end{block}  
-\end{slide}
-
-
-\begin{slide}{Formal Semantics are Fun, but what can we do with them?}
-
-\begin{block}{Certified Compilation}
-One particular important application of formal semantics is certified compilation, that is, the process of transforming high-level source code into a machine level instruction set if guaranteed (i.e., mathematically proved), is correct.
-\end{block}
-
-\begin{block}{Steps}
-\begin{itemize}
-  \item Define an instruction set and the mathematic meaning of its instructions, i.e., the rules for a formal semantics
-  \item Define a translation function
-  \item Prove that if $\pair{C,s} \Longrightarrow_{hlc} \pair{\kw{skip},s'}$, then $\pair{\mathcal{T}(C),s} \Longrightarrow_{llc} \pair{NOOP,s'}$\footnote{$NOOP$ means an abstraction of no-operation, which can be represented differently depending on the instruction set.}
-\end{itemize}  
-\end{block}
-
-  
-\end{slide}
-
- 
 \section{Interesting Extensions}
 
 
@@ -391,7 +530,7 @@ Add a new keyword to commands:
 Introduce the following rule in the semantics:\\
 \typerule{abort-NS}%
   {}%
-  {\pair{\kw{abort},s} \Longrightarrow \bot}
+  {\pair{\kw{abort},s} \leadsto \bot}
 \\[5mm] 
 \typerule{abort-SOS}%
   {}%
@@ -423,16 +562,16 @@ Introduce the following rule in the semantics:\\
 \end{slide}
 
 
-\begin{slide}{What can go wrong?}
-  \begin{block}{Assuming a well written program}
-    \begin{itemize}
-      \item using an undefined variable
-      \item loops never end
-      \item the result is unexpected
-      \item \ldots
-    \end{itemize}
-  \end{block}
-\end{slide}
+%\begin{slide}{What can go wrong?}
+%  \begin{block}{Assuming a well written program}
+%    \begin{itemize}
+%      \item using an undefined variable
+%      \item loops never end
+%      \item the result is unexpected
+%      \item \ldots
+%    \end{itemize}
+%  \end{block}
+%\end{slide}
 
 
 \begin{slide}{While$^{Int}$ with assertions -- Syntax}
@@ -442,22 +581,120 @@ Introduce the following rule in the semantics:\\
   \\
   n &~\in~ \text{Numerals}
   \\
-  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E \odot E
   \tag{boolean-expr}\\
   E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
   \tag{int-expr}\\
   C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
-    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
-  \tag{command}\\
-  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
-    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\,C ~~|\\
+    &\:\:\:\:\:\:\:\:\:\:\:\kw{assert}(B)\tag{command}\\
+%  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+%    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
 \end{align*}
+Where $\odot \in \{<,>,\le,\ge,==\}$.
+\end{slide}
 
-Assume operators to be left associative.
-\\Use `\{' and `\}' to clarify precedence when necessary.
+\section{Structural Operational Semantics of Machine Code}
 
+\begin{slide}{Beyond the Simple Imperative Language}
+\begin{block}{Do we need to stick to IMP?}
+So far we have been looking into simple imperative languages, similar to the C family of languages (well, in reality, a very reduced version of such languages). But what about other families of languages? Indeed it is possible to define other types of languages, and we will be looking into an abstract assembly language!
+\end{block}
+
+\begin{block}{Establishing the basis}
+Assembly-like languages usually consider registers and a stack, in their more simplest form. So, we will be looking into a language that consists of "configurations" of the type $$\langle c,e,s\rangle$$ such that $c$ is a program, $e$ is the evolution stack, and $s$ is the storage (i.e., it keeps the "variables"). The evaluation stack can be seen as an infinite list of elements in ($\mathbb{Z} \cup \mathbb{B}$).
+\end{block}
 \end{slide}
 
 
+\begin{slide}{Syntax}
+  \begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \text{Numerals}
+  \\
+  inst &~::=~ \kw{PUSH}~n ~~|~~ \kw{ADD} ~~|~~ \kw{MULT} ~~|~~ \kw{SUB} ~~|~~ \kw{TRUE} ~~|~~ \kw{FALSE} ~~|\\
+  & \:\:\:\:\:\:\:\:\:\:\:\kw{EQ} ~~|~~\kw{LE} ~~|~~\kw{AND} ~~|~~\kw{NEG} ~~|~~ \kw{FETCH}~x ~~|~~ \kw{STORE}~x ~~|~~\kw{NOOP}\\
+  & \:\:\:\:\:\:\:\:\:\:\:\kw{BRANCH}(c,c) ~~|~~ \kw{LOOP}(c,c) \tag{instructions}\\
+  c &~::=~ \epsilon ~~|~~ inst:c  \tag{code}
+\end{align*}
+\end{slide}
+
+\begin{slide}{Semantics}
+\begin{align*}
+\pair{\kw{PUSH}~n:c,e,s} & \Longrightarrow \pair{c,n:e,s}\\  
+\pair{\kw{ADD}:c,n_1:n_2:e,s} & \Longrightarrow \pair{c,(n_1+n_2):e,s}\\
+\pair{\kw{SUB}:c,n_1:n_2:e,s} & \Longrightarrow \pair{c,(n_1-n_2):e,s}\\
+\pair{\kw{MULT}:c,n_1:n_2:e,s} & \Longrightarrow \pair{c,(n_1 \times n_2):e,s}\\
+\pair{\kw{TRUE}:c,e,s} & \Longrightarrow \pair{c,\mathbf{tt}:e,s}\\
+\pair{\kw{FALSE}:c,e,s} & \Longrightarrow \pair{c,\mathbf{ff}:e,s}\\
+\pair{\kw{EQ}:c,n_1:n_2:e,s} & \Longrightarrow \pair{c,(n_1=n_2):e,s}\\
+\pair{\kw{LE}:c,n_1:n_2:e,s} & \Longrightarrow \pair{c,(n_1\le n_2):e,s}\\
+\pair{\kw{AND}:c,b_1:b_2:e,s} & \Longrightarrow \pair{c,(b_1\land b_2):e,s}\\
+\pair{\kw{NEG}:c,b:e,s} & \Longrightarrow \pair{c,(\neg b):e,s}
+\end{align*}
+\end{slide}
+
+\begin{slide}{Semantics}
+\begin{align*}
+\pair{\kw{FETCH}~n:c,e,s} & \Longrightarrow \pair{c,s(x):e,s}\\
+\pair{\kw{STORE}~n:c,e,s} & \Longrightarrow \pair{c,e,s[x \mapsto n]}\\
+\pair{\kw{NOOP}:c,e,s} & \Longrightarrow \pair{c,e,s}\\
+\pair{\kw{BRANCH}(c_1,c_2):c,b:e,s} & \Longrightarrow \pair{c_1:c,e,s}\:if\:b = \mathbf{tt}\\
+\pair{\kw{BRANCH}(c_1,c_2):c,b:e,s} & \Longrightarrow \pair{c_1:c,e,s}\:if\:b = \mathbf{ff}\\
+\pair{\kw{LOOP}(c_1,c_2):c,e,s} & \Longrightarrow \pair{c_1:\kw{BRANCH}(c_2:\kw{LOOP}(c_1,c_2),\kw{NOOP}):c,e,s}\\
+\end{align*}
+\end{slide}
+
+\begin{slide}{A small example}
+Lets go through a simple example, where we assume that the value of the variable $x$ is 3.
+\begin{align*}
+\pair{\kw{PUSH}~1:\kw{FETCH}~x:\kw{ADD}:\kw{STORE}~x,\epsilon,s} & \Longrightarrow \\ 
+\pair{\kw{FETCH}~x:\kw{ADD}:\kw{STORE}~x,1,s} & \Longrightarrow \\ 
+\pair{\kw{ADD}:\kw{STORE}~x,3:1,s} & \Longrightarrow \\ 
+\pair{\kw{STORE}~x,4,s} & \Longrightarrow \\ 
+& \pair{\epsilon,\epsilon,s[x \mapsto 4]} \\ 
+\end{align*}
+\end{slide}
+
+\begin{slide}{Formal Semantics are Fun, but what can we do with them?}
+
+\begin{block}{Certified Compilation}
+One particular important application of formal semantics is certified compilation, that is, the process of transforming high-level source code into a machine level instruction set if guaranteed (i.e., mathematically proved), is correct.
+\end{block}
+
+\begin{block}{Steps}
+\begin{itemize}
+  \item Define an instruction set and the mathematic meaning of its instructions, i.e., the rules for a formal semantics
+  \item Define a translation function
+  \item Prove that if $\pair{C,s} \Longrightarrow_{hlc} \pair{\kw{skip},s'}$, then $\pair{\mathcal{T}(C),s} \Longrightarrow_{llc} \pair{NOOP,s'}$\footnote{$NOOP$ means an abstraction of no-operation, which can be represented differently depending on the instruction set.}
+\end{itemize}  
+\end{block}
+\end{slide}
+
+\begin{slide}{Suggested exercises for practicing - I}
+\begin{block}{Construct your own command and semantic rules}
+As a first exercise, I would like to appeal to your criativity and do the following:
+\begin{itemize}
+  \item select a command that is not available in our simple imperative language, provide its abstract syntax and either Natural Semantics or Structural Operational Semantics transition rules/steps; 
+  \item in the case when the new command's transition rules are defined by translating into combinations of primitive rules, try to provide an alternative formulation that does not use those primitive rules.
+  \item if needed, you can also extend the type of state of a program. Remember that currently on a function mapping variable identifiers to values in $\mathbb{I}$ is defined.
+\end{itemize}
+\end{block}  
+\end{slide}
+
+\begin{slide}{Suggested exercises for practicing - II}
+\begin{block}{Construct your own formal semantics interpreter}
+As a second exercise, I would like to appeal to your passion for coding do the following:
+\begin{itemize}
+  \item select the programming language that most suits you. For simplicity I suggest Python, and highly suggest that you avoid system programming languages such as C.
+  \item find a representation for the abstract syntax of expressions and commands using the facilities of the chosen programming language
+  \item  experiment implementing a Natural Semantics interpreter
+  \item by the way, next laboratory language will be dedicated to these to exercises, so don't forget to bring laptops!
+\end{itemize}
+\end{block}  
+\end{slide}
+
 
 \end{document}
+
