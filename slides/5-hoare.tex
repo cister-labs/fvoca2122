@@ -3,6 +3,7 @@
 \input{macros/beamerconf}
 \input{macros/preamble}
 \input{macros/macros}
+\usepackage{bussproofs}
 
 
 \setLecture{3}{Hoare Logic}
@@ -20,14 +21,13 @@
 \frame[plain]{\titlepage}
 
 
-\section{A While Language}
+\section{Ingredients to Reason About Partial Correctness}
 
 \newcommand{\kw}[1]{\structure{\text{#1}}}
 
-\begin{slide}{While$^{Int}$ -- Syntax}
-\small
-
-\begin{align*}
+\begin{slide}{Recap the Syntax of our Simple While Language}
+  Let us recall the simple While language that we have seen when getting introduced to Formal Semantics.
+  \begin{align*}
   x &~\in~ \text{Identifiers}
   \\
   n &~\in~ \text{Numerals}
@@ -40,120 +40,229 @@
  ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
   \tag{command}
 \end{align*}
-
-Assume operators to be left associative.
-\\Use `\{' and `\}' to clarify precedence when necessary.
-
 \end{slide}
 
+\begin{slide}{Towards Program Correctness}
 
-\begin{slide}{Natural Semantics -- booleans and integers}
-\small 
-\centering
-\newcommand{\msep}{~~~~~~}
-
-
-\typerule[b]{var}%
-  {\shrk}{\alert{\pair{x,s}\leadsto s(x)}}
-\msep
-\typerule[b]{true}%
-  {\shrk}{\alert{\pair{\kw{true},s}\leadsto \kw{true}}}
-\msep
-\typerule[b]{false}%
-  {\shrk}{\alert{\pair{\kw{false},s}\leadsto \kw{false}}}
-\msep
-\typerule[b]{int}%
-  {\shrk}{\alert{\pair{n,s}\leadsto n}}
-\\[5mm]
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{false}}{\pair{B\land B',s} \leadsto \kw{false}}
-\msep
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{true}\quad \pair{B',s}\leadsto s'}{\pair{B\land B',s} \leadsto s'}
-\\[5mm]
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{true}}{\pair{B\lor B',s} \leadsto \kw{true}}
-\msep
-\styperule[b]%
-  {\pair{B,s}\leadsto \kw{false}\quad \pair{B',s}\leadsto s'}{\pair{B\lor B',s} \leadsto s'}
-\\[5mm]
-\styperule[c]%
-  {\pair{E,s}\leadsto n \quad \pair{E',s}\leadsto n'}{\pair{E \odot E',s} \leadsto n\odot n'}%
-  ~~where $\odot \in \set{+,-,*}$
+\begin{itemize}
+\item In this class we will get to know how can this language be enriched with logical assertions so that we are able to apply Hoare Logic (an axiomatic semantics) to reason about the correctness of programs.  
+\item We consider only \alert{partial correctness} specifications: programs are required to behave properly if they terminate, but are not required to terminate.
+\item for \alert{total correctness} we need to consider assertions that allow to prove \alert{termination}, that is, the programs behave properly and they terminate.
+\end{itemize}
 \end{slide}
 
-
-\begin{slide}{Natural Semantics -- commands}
-\small 
-\centering
-\newcommand{\msep}{~~~~~~}
-
-%skip
-\typerule{skip}%
-  {\shrk}{\pair{\kw{skip},s} \leadsto s}
-\msep % assign
-\typerule{assign}%
-  {\alert{\pair{E,s}\leadsto n}}%
-  {\pair{x{:=}E,s} \leadsto s[x\mapsto n]}
-\msep % seq
-\typerule{seq}%
-  {\pair{C_1,s}\leadsto s' \quad \pair{C_2,s'}\leadsto s''}%
-  {\pair{C_1;C_2\,,\,s} \leadsto s''}
-\\[5mm] % if-then
-\typerule{if-then}%
-  {\alert{\pair{B,s}\leadsto \kw{true}} \quad \pair{C_t,s}\leadsto s'}%
-  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
-\msep % if-else
-\typerule{if-else}%
-  {\alert{\pair{B,s}\leadsto \kw{false}} \quad \pair{C_f,s}\leadsto s'}%
-  {\pair{\kw{if }B\kw{ then }C_t\kw{ else }C_f\,,\,s} \leadsto s'}
-\\[5mm] % while-false
-\typerule{while-false}%
-  {\alert{\pair{B,s}\leadsto \kw{false}}}%
-  {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s'}
-\msep % while-true
-\typerule{while-true}{\alert{\pair{B,s}\leadsto \kw{true}} \quad
-                      \pair{C,s}\leadsto s' \quad
-                      \pair{\kw{while }B\kw{ do }C,s'}\leadsto s''}%
-         {\pair{\kw{while }B\kw{ do }C\,,\,s} \leadsto s''}
-\end{slide}
-
-
-
-\begin{slide}{What can go wrong?}
-  \begin{block}{Assuming a well written program}
-    \begin{itemize}
-      \item using an undefined variable
-      \item loops never end
-      \item the result is unexpected
-      \item \ldots
-    \end{itemize}
-  \end{block}
-\end{slide}
-
-
-\begin{slide}{While$^{Int}$ with assertions -- Syntax}
-\small
-\begin{align*}
+\begin{slide}{Extending the While language with Logical Specifications}
+\begin{block}{Syntactic Extension}
+  \begin{align*}
   x &~\in~ \text{Identifiers}
   \\
   n &~\in~ \text{Numerals}
   \\
-  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B~ \&\& B ~~|~~ B ~||~ B ~~|~~ ! B ~~|~~ E<E ~~|~~ E=E
   \tag{boolean-expr}\\
   E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
   \tag{int-expr}\\
-  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
-    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
+ ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
   \tag{command}\\
-  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
-    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+  A &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ E<E ~~|~~ E=E ~~|~~ A \land A ~~|~~ A \lor A ~~|~~ \lnot A ~~|~~ A \to A\\
+  &~~~~~|~~  \forall x. A ~~|~~\exists x.A \tag{assertions}\\
+  S & ~::=~ \{A\}\;C\;\{A\}\tag{specification}
 \end{align*}
-
-Assume operators to be left associative.
-\\Use `\{' and `\}' to clarify precedence when necessary.
-
+\end{block}
 \end{slide}
+
+\begin{slide}{Hoare Triples}
+  
+  \begin{block}{Core concept}
+    The atomic concept that we will be using in order to reason about the partial correctness of programs is that known as {\em Hoare Triple}. It is a specification of the form $$\{P\}\,C\,\{Q\}$$ that reads as follows: for all states satisfying the {\em \alert{precondition}} $P$, if the program $C$ executes and terminates in a state satisfying the {\em \alert{postcondition}} $Q$, then the triple is valid.
+  \end{block}
+  \alert{These preconditions and postconditions, as well as other types of logical specifications that we will see ahead, are also known as {\em {\bf contracts}}.}
+\end{slide}
+
+\begin{slide}{Expanding Formal Semantics to Assertions}
+  So far, the formal semantics presented do not include the evaluation of logical assertions. We present below the rules for their interpretation, where $s$ is a program state (the notion of state already presented)
+  \begin{align*}
+  \llbracket \kw{true} \rrbracket(s) &~=~  \top\\
+  \llbracket \kw{false} \rrbracket(s) &~=~ \bot\\
+  \llbracket \neg A\rrbracket(s) &~=~ \neg \llbracket A \rrbracket(s) \\
+  \llbracket A_1 \land A_2\rrbracket(s) &~=~ \llbracket A_1 \rrbracket(s) \land \llbracket A_2\rrbracket(s)\\
+  \llbracket A_1 \lor A_2\rrbracket(s) &~=~ \llbracket A_1 \rrbracket(s) \lor \llbracket A_2\rrbracket(s)\\
+  \llbracket A_1 \to A_2\rrbracket(s) &~=~ \llbracket A_1 \rrbracket(s) \to \llbracket A_2\rrbracket(s)\\
+  \llbracket \forall x. A\rrbracket(s) &~=~ \forall v:int. \llbracket A\rrbracket(s[x \mapsto v])\\
+  \llbracket \exists x. A\rrbracket(s) &~=~ \forall v:int. \llbracket A\rrbracket(s[x \mapsto v])\\
+  \end{align*}
+  
+\end{slide}
+
+
+
+\section*{Hoare Logic}
+
+\begin{slide}{Validity of Hoare Triples}
+\begin{block}{How to check the validity of Hoare Triples?}
+  \begin{itemize}
+    \item the usual method for assuring the validity of Hoare Triples is to use a {\bf sound}
+program-proof system. 
+  \item by sound one means that it should not allow to conclude specifications that are not valid. 
+  \end{itemize}
+\end{block}
+\begin{block}{Program-Proof System}
+  A program-proof system is a set of inference rules that can be seen as fundamental laws about programs. In the next slides, we will present such rules. We will introduce proof-systems for Hoare logic and explain the differences between them, mostly focusing on their applicability in terms of verification activities.
+\end{block}  
+\end{slide}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+\begin{block}{The case of the \kw{skip} command}
+The \kw{skip} command does not change the state of the program. Hence, the precondition and postconditions must be the same.
+  \begin{prooftree}
+       \AxiomC{$$}
+       \UnaryInfC{$\{P\}\;\kw{skip}\;\{P\}$}
+  \end{prooftree} 
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of the assignment command}
+  The assignment rule states that a postcondition $Q$ can be granted for an assignment command if the condition that results from substituting $E$ for $x$ in $Q$ holds as precondition.
+  
+  %In the case of assignment, the value assigned to a variable is (possibly) changed, and thus we need to show that the precondition $P$ implies the postcondition $Q$ with the value of the variable $x$ replace by the value of the expression $E$.
+    \begin{prooftree}
+      \AxiomC{$$}
+      \UnaryInfC{$\{Q[x \mapsto E]\}\;x:=\,E\;\{Q\}$}
+    \end{prooftree}
+  \end{block}
+  \begin{block}{Instances of the above axiom}
+    \begin{itemize}
+      \item $\{Y = \kw{2}\}\;x := 2\;\{Y = \kw{X}\}$  
+      \item $\{\kw{x + 1} = n + 1\}\;x := x + 1\;\{\kw{x} = n + 1\}$    
+      \item $\{\kw{E} = E\}\;x := E\;\{\kw{x} = E\}$  
+    \end{itemize}
+
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of command sequence}
+  When in the presence of a sequence of commands, we must prove that if the first command $C_1$ terminates in a postcondition $R$ then, the second command $C_2$, satisfying $R$ at start, if terminates, must do so in the prescribed postcondition $Q$.
+    \begin{prooftree}
+      \AxiomC{$\{P\} C_1 \{R\}$}
+      \AxiomC{$\{R\} C_2 \{Q\}$}
+      \BinaryInfC{$\{P\} C_1\,\textbf{;}\,C_2 \{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{frame}{An example of the sequence rule}
+  \begin{block}{A short example}
+  By the assignment axiom we have:
+  \begin{itemize}
+  \item [(i)]$\{X = x \land Y = y\}\;R := X\;\{R=x \land Y=y\}$ 
+  \item [(ii)]$\{R = x \land Y = y\}\;X := Y\;\{R=x \land X=y\}$
+  \item [(iii)]$\{R = x \land X = y\}\;Y := R\;\{Y=x \land X=y\}$
+  \end{itemize}
+  By (i) and (ii) and the sequence rule we obtain
+  $$(iv)\:\:\{X = x \land Y = y\}\;R := X; X := Y\;\{R=x \land Y=y\}$$
+  Now, by (iv) and (iii) we finish the deduction
+  $$\{X = x \land Y = y\}\;R := X; X := Y;Y := R\;\{Y=x \land X=y\}$$
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of conditionals}
+  In the case of conditionals, one must prove that independently of the value of the Boolean $B$ that serves as a guarda for the conditional. 
+    \begin{prooftree}
+      \AxiomC{$\{B \land P\}\,C_1\,\{Q\}$}
+      \AxiomC{$\{\neg B \land P\}\,C_2\,\{Q\}$}
+      \BinaryInfC{$\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}$}
+    \end{prooftree}
+  \end{block}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case fo while loops}
+  In the case of loops, we need to prove an invariant $I$ (i.e., a condition that must hold at the entry and exit of the loop) throughout all the iterations of the loop (we don't know beforehand how many will be). 
+    \begin{prooftree}
+      \AxiomC{$\{B \land I\}\,C_1\,\{I\}$}
+      \UnaryInfC{$\{I\}\,\kw{while}\;B\;\kw{do}\;C_1\{I \land \neg B\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of logical consequence}
+    This one is a special rule that deals only with logical assertions. It establishes a connection with first-order logic by means of side conditions that are assertions rather than specifications.     
+    \begin{prooftree}
+%      \AxiomC{$P \to P_1$}
+       \AxiomC{$\{P_1\}\,C\,\{Q_1\}$}
+%       \AxiomC{$Q_1 \to Q$}
+       \UnaryInfC{$\{P\}\,C\,\{Q\}$}     
+    \end{prooftree}
+    if $P \to P_1$ and $Q_1 \to Q$ hold (these are called side-conditions of the rule). Note also that this rule implies that Hoare logic is not meant to be used by itself; it must always be accompanied by some device for establishing the validity of side conditions, such as a decision procedure based on satisfiability, or an inference system for first-order logic.
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{A simple example using the logical consequence rule}
+  The small derivation below shows the applicability of the logical consequence rule, followed by the assignment rule. The logical consequence rule generates two side effects which can be trivially proved, and enables the application of the assignment rule.
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{(assignment rule)}
+      \UnaryInfC{$\{x + 1 > 10\}\;x := x + 1\;\{x > 10\}$}
+      \RightLabel{if $x > 10 \to x + 1 > 10$ and $x > 10 \to x > 10$}
+      \UnaryInfC{$\{x > 10\}\;x := x + 1\;\{x > 10\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\section*{Hoare Logic in practice}
+
+\begin{slide}{How to deal with Hoare Logic proofs}
+  \begin{block}{Two ways}
+  \begin{itemize}
+    \item directly encoding the inference system in the logic of the proof tool and reasoning simultaneously with rules of both Hoare logic and first-order logic as required: reasoning starts with the former but switches to the latter logic when side conditions are introduced by the consequence rule.
+    \item The alternative approach consists in two steps:
+      \begin{itemize}
+        \item A proof tree is constructed for the desired specification, assuming that the side conditions generated by the consequence rule are valid
+        \item An external proof tool is used (such as a theorem prover or a proof assistant) to actually establish the validity of the side conditions
+      \end{itemize}
+  \end{itemize}
+    
+  \end{block}
+\alert{We will continue in the next theoretical class with the alternative method mentioned}. %We will also see, in the future, the part where we encode Hoare Logic in a proof assistant and see how we can use the power of such a system to have a single environment to deal with Hoare logic.}
+\end{slide}
+
+
+
+
+%\begin{slide}{While$^{Int}$ with assertions -- Syntax}
+%\small
+%\begin{align*}
+%  x &~\in~ \text{Identifiers}
+%  \\
+%  n &~\in~ \text{Numerals}
+%  \\
+%  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+%  \tag{boolean-expr}\\
+%  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+%  \tag{int-expr}\\
+%  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
+%    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+%  \tag{command}\\
+%  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+%    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+%\end{align*}
+%
+%Assume operators to be left associative.
+%\\Use `\{' and `\}' to clarify precedence when necessary.
+%
+%\end{slide}
 
 
 
