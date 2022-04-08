@@ -35,15 +35,16 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
 
 ### Slides
 
-<ul>
+<ol>
   <li> <a href="slides/0-fvoca-intro.pdf">Introduction</a> </li>
   <li> <a href="slides/1-TA-modelling.pdf">Modelling with Timed Automata</a> </li>
   <li> <a href="slides/2-TA-verification.pdf">Verification of Timed Automata</a> </li>
-  <li> <a href="slides/3-semantics.pdf">Formal Verification of Program Code</a> </li>
-  <li> <a href="slides/4-semantics.pdf">Operational Semantics</a></li>
+  <!-- <li> <a href="slides/3-semantics.pdf">Formal Verification of Program Code</a> </li>
+   -->
+  <li> <a href="slides/4-semantics.pdf">Denotational and Operational Semantics</a></li>
   <li> ... </li>
   <!-- <li> <a href="slides/_.pdf" class="hide">_</a></li> -->
-</ul>
+</ol>
 
 
 ### Exercises and Assignments
