@@ -110,7 +110,7 @@ The deadlines are summarised below, and may still suffer changes.
  - __20 Mar (Sun) @ 23:59__ - [Slides 1](slides/1-TA-modelling.pdf) (pages 1-37)
  - __27 Mar (Sun) @ 23:59__ - [Slides 1](slides/1-TA-modelling.pdf) (pages 37-end); [Slides 2](slides/2-TA-verification.pdf) (pages 1-19 except 8)  
  - __3 Apr (Sun) @ 23:59__ - [Slides 2](slides/2-TA-verification.pdf) (pages 8 and 20-end)  
- - __1 May (Sun) @ 23:59__ - [TP1: Specification and verification in Uppaal](assignments/tp1.pdf)
+ - __8 May (Sun) @ 23:59 (extended)__ - [TP1: Specification and verification in Uppaal](assignments/tp1.pdf)
 
 ### Lecturers
 
