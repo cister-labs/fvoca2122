@@ -6,7 +6,7 @@
 \usepackage{bussproofs}
 
 
-\setLecture{3}{Hoare Logic and Verification Condition Generation}
+\setLecture{6}{Hoare Logic and Verification Condition Generation}
 
 % \title{
 % 	RAMDE -- Requirements and Model-driven Engineering 
@@ -416,7 +416,7 @@ Annotating a program is definitely a tedious and error prone task. Nevertheless,
 
 \begin{slide}{Improved Verification Condition Generation}
 \begin{align*}
-VC(\lw{skip},Q) & ~=~ \emptyset\\
+VC(\kw{skip},Q) & ~=~ \emptyset\\
 VC(x := e,Q)    & ~=~ \emptyset\\
 VC(C_1;C_2,Q)   & ~=~ VC(C_1,wprec(C_2,Q)) \cup VC(C_2,Q)\\
 VC(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ VC(C_1,Q) \cup VC(C_2,Q)\\

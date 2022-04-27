@@ -41,7 +41,12 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
   <li> <a href="slides/2-TA-verification.pdf">2. Verification of Timed Automata</a> </li>
   <!-- <li> <a href="slides/3-semantics.pdf">Formal Verification of Program Code</a> </li>
    -->
-  <li> <a href="slides/4-semantics.pdf">3. Denotational and Operational Semantics</a></li>
+  <li> <a href="slides/3-semantics.pdf">3. A Not So Formal Introduction to Formal Verification of Program Code</a></li>
+  <li> <a href="slides/4-semantics.pdf">4. Operational Semantics</a></li>
+  <li> <a href="slides/5-hoare.pdf">5. Hoare Logic.pdf</a></li>
+  <li> <a href="slides/6-hoare-vc.pdf">6. Hoare Logic and Verification Condition Generation I</a></li>
+  <li> <a href="slides/7-hoare-vc-cont.pdf">7. Hoare Logic and Verification Condition Generation II</a></li>
+  <li> <a href="slides/8-hoare-vc-ex.pdf">8. Hoare Logic and Verification Condition Generation III</a></li>
   <li> ... </li>
   <!-- <li> <a href="slides/_.pdf" class="hide">_</a></li> -->
 </ul>
