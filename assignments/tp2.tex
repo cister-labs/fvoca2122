@@ -100,16 +100,16 @@
 \begin{enumerate}
   \item $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$
   \item $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i > 0)}$
-  \item $\{(i = 5) \land (a = 3)\}\,a := i + 2;\,\{a = 7\}$
-  \item $\{a = 7\}\,i := i + 2;\,\{a = 7\}$
-  \item $\{i = a - 1\}\,i := i + 2;\,\{i = a + 1\}$
-  \item $\{True\}\,a := i + 2;\,\{a = i + 2\}$
-  \item $\{a > b\}\,m := 1; n := a - b;\,\{m \times n > 0\}$
-  \item $\{s = 2^i\}\,i := i + 1;\,s := s * 2\,\{s = 2^i\}$
-  \item $\{True\}\,\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j\{(min \leq i) \land (min \leq j)\}$
-  \item $\{(i > 0) \land (j > 0)\}\,\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j\,\{min > 0\}$
-  \item $\{s = 2^i\}\,\textbf{while}\,i<n\,\{?\}\,\textbf{do}\,i := i +1 ;s := s*2\,\{s = 2^i\}$
-  \item $\{(s = 2^i) \land (i \leq n)\}\,\textbf{while}\,i<n\,\{?\}\,\textbf{do}\,i := i +1 ;s := s*2\,\{s = 2^n\}$
+  \item $\hoaret{(i = 5) \land (a = 3)}{a := i + 2}{a = 7}$
+  \item $\hoaret{a = 7}{i := i + 2}{a = 7}$
+  \item $\hoaret{i = a - 1}{i := i + 2}{i = a + 1}$
+  \item $\hoaret{True}{a := i + 2}{a = i + 2}$
+  \item $\hoaret{a > b}{m := 1; n := a - b}{m \times n > 0}$
+  \item $\hoaret{s = 2^i}{i := i + 1;\,s := s * 2}{s = 2^i}$
+  \item $\hoaret{True}{\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j}{(min \leq i) \land (min \leq j)}$
+  \item $\hoaret{(i > 0) \land (j > 0)}{\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j}{min > 0}$
+  \item $\hoaret{s = 2^i}{\textbf{\kw{while}}\,i<n\,\{?\}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2}{s = 2^i}$
+  \item $\hoaret{(s = 2^i) \land (i \leq n)}{\textbf{\kw{while}}\,i<n\,\{?\}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2}{s = 2^n}$
 \end{enumerate}
 
 
@@ -119,62 +119,163 @@
 
 \subsection*{Weakest Precondition Generation (Ex-1)}
 
-\myparagraph{Exercise 1)} $\{i = 5\}\,a := i + 2;\,\{(a = 7) \land (i = 5)\}$\\\vspace{0.3cm}\\
+\myparagraph{Exercise 1)} $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$\\\vspace{0.3cm}\\
 For calculating the weakest precondition we will use the \textbf{wprec} function. It is straightforward to compute it:
 \begin{align*}
   \textbf{wprec}(a := i + 2,\horange{(a = 7) \land (i = 5)}) & =\\
   \horange{((a = 7) \land (i = 5))}\hblue{[a \mapsto i + 2]} & =\\
-  (i + 2 = 7) \land (i = 5)
+  \horange{(i + 2 = 7) \land (i = 5)}
 \end{align*}
-Next, we show that the defined precondition $i=5$ logically implies the weakest precondition generated; that is: $i = 5 \to (i + 2 = 7) \land (i = 5)$, which is easy to prove that it is valid.\\\vspace{0.2cm}\\\textbf{{\color{red}{Digression on Hoare Logic rules:}}} We start by recalling the first Hoare logic rule for assignments:\\
+Next, we show that the defined precondition $i=5$ logically implies the weakest precondition generated; that is: $i = 5 \to (i + 2 = 7) \land (i = 5)$, which is easy to prove that it is valid.\\\vspace{0.2cm}\\\textbf{{\color{red}{Digression on Hoare Logic rules:}}} We start by recalling the first Hoare logic rule for assignments introduced in the classes:\\
 
 \begin{prooftree}
 \AxiomC{}
+\LeftLabel{(Assg)}
 \UnaryInfC{$\hoaret{Q[x \mapsto E}{x:=e}{Q}$}
 \end{prooftree}\vspace{0.2cm}
 This problem with this rule is the fact that it is too rigid:  it cannot be applied directly to the post condition $(a = 7) \land (i = 5)$, since $((a = 7) \land (i = 5))[a \mapsto i + 2]$ reduces to $((i + 2 = 7) \land (i=5))$ which does not match $i = 5$, that is, the defined precondition. For solving this issue, the solution consists in first applying the consequence rule
 \begin{prooftree}
 \AxiomC{$\hoaret{P'}{C}{Q'}$}
+\LeftLabel{(Cons)}
 \RightLabel{, if $\horange{P \to P'}$ and $\horange{Q' \to Q}$}
 \UnaryInfC{$\hoaret{P}{C}{Q}$}
 \end{prooftree}
 We can use this rule to match the $Q[x \mapsto E]$ that we need so that we can apply the assignment rule. The proof tree presented below shows exactly how that is done.
 \begin{prooftree}
 \AxiomC{}
-\LeftLabel{(Assignment)}
+\LeftLabel{(Assg)}
 \UnaryInfC{$\hoaret{(i + 2 = 7) \land (i = 5)}{a := i + 2}{(a = 7) \land (i = 5)}$}
-\LeftLabel{(Consequence)}
+\LeftLabel{(Cons)}
 \RightLabel{if $i = 5 \to (i + 2 = 7) \land (i = 5)$}
 \UnaryInfC{$\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$}  
 \end{prooftree}\vspace{0.3cm}
 In the proof tree above, the side condition $i = 5 \to (i + 2 = 7) \land (i = 5)$ is captured by the formula scheme $P \to P'$ of the consequence rule. Also, we know already that this implication is valid.\\
-Recall also that we have introduced an updated version of Hoare logic's assignment axiom, that is more flexible by not requiring the assertion $Q[x \mapsto E]$ as precondition, by generating a side condition similar to the one generated when we applied the consequence rule. The rule is 
+
+\noindent Recall also that we have introduced an updated version of Hoare logic's assignment axiom, that is more flexible by not requiring the assertion $Q[x \mapsto E]$ as precondition. This rule generates a side condition similar to the one generated when we applied the consequence rule. The rule is defined as 
 \begin{prooftree}
 \AxiomC{}
+\LeftLabel{(AssgU)}
 \RightLabel{, if $P \to Q[x \mapsto E]$}
-\UnaryInfC{$\{P\}\,x:=e\,\{Q\}$}
+\UnaryInfC{$\hoaret{P}{x:=e}{Q}$}
 \end{prooftree}\vspace{0.2cm}
-Applying this rule goes as follows:
+Applying this rule to the Hoare triple at hand is as follows:
 \begin{prooftree}
 \AxiomC{}
-\LeftLabel{(Assignment)}
+\LeftLabel{(AssgU)}
 \RightLabel{if $i = 5 \to (i + 2 = 7) \land (i = 5)$}
 \UnaryInfC{$\{i = 5\}\,a := i + 2;\,\{(a = 7) \land (i = 5)\}$}  
 \end{prooftree}\vspace{0.3cm}
+The side condition, as can be seen, is the same as the one generated by the application of the consequence rule in the previous example, hence we know it is valid.
+
+\myparagraph{Exercise 9)} $\hoaret{True}{\textbf{\kw{if}}\,i<j\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j}{(min \leq i) \land (min \leq j)}$\\\vspace{0.3cm}\\
+
+We start by calculating the weakest precondition by feeding the wprec function with the code and postcondition given:\\
+
+\begin{tabular}{cl}
+  $\textbf{wprec}(\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j,\horange{(min \leq i) \land (min \leq j)})$ & = \\ \\
+  $(i < j \to \textbf{wprec}(min := i, \horange{(min \leq i) \land (min \leq j)})$\\ 
+  \multicolumn{1}{c}{$\land$}\\ 
+  $(\neg(i<j) \to \textbf{wprec}(min :=j, \horange{(min \leq i) \land (min \leq j)})$ & = \\ \\
+  $(i < j \to ((min \leq i) \land (min \leq j))\hblue{[min \mapsto i]}$ \\
+  \multicolumn{1}{c}{$\land$}\\
+  $(\neg(i < j) \to ((min \leq i) \land (min \leq j))\hblue{[min \mapsto j]}$ & = \\ \\
+  $(i < j \to ((i \leq i) \land (i \leq j)) \land (\neg(i<j) \to ((j \leq i) \land (j \leq j))$ & =\\ \\
+  $(i < j \to ((i \leq i) \land (i \leq j)) \land (j \leq i \to ((j \leq i) \land (j \leq j))$
+\end{tabular}\vspace{0.2cm}\\
+
+We now need to prove that true implies the generated weakest precondition. This means that we must prove that the weakest precondition is itself true, which is trivial.\\\vspace{0.2cm}\\ 
+
+\textbf{{\color{red}{Digression on Hoare Logic rules:}}} For the sake of completeness, we will see how to prove the given Hoare triple using the Hoare logic rules.
 
 
-\myparagraph{Exercise 9)} $\{True\}\,\textbf{if}\,i<j\,\textbf{then}\,min := i\,\textbf{else}\,min := j\{(min \leq i) \land (min \leq j)\}$\\\vspace{0.3cm}\\
-We preceed as we did in the previous explanation:
+We approach this problem in the same we did in the previous example. First, lets recall the rule for the conditional statement:
+\begin{prooftree}
+\AxiomC{$\hoaret{P \land B}{C_1}{Q}$}
+\AxiomC{$\hoaret{P \land \neg B}{C_2}{Q}$}
+\LeftLabel{(If)}
+\BinaryInfC{$\hoaret{P}{\textbf{\kw{if}}\,B\,\textbf{\kw{then}}\,C_1\,\textbf{\kw{else}}\,C_2}{Q}$}  
+\end{prooftree}
+So, if we instantiate the above rule with the Hoare triple we have to prove, we obtain 
+\begin{prooftree}
+\AxiomC{$\hoaret{True \land i < j}{min := i}{(min \leq i) \land (min \leq j)}$}
+\AxiomC{$\hoaret{True \land \neg(i < j)}{min := j}{(min \leq i) \land (min \leq j)}$}
+\BinaryInfC{$\hoaret{True}{\textbf{\kw{if}}\,B\,\textbf{\kw{then}}\,C_1\,\textbf{\kw{else}}\,C_2}{(min \leq i) \land (min \leq j)}$}  
+\end{prooftree}
+We now need to apply, somehow, the assignment rule to both of the hypothesis produced by the rule in order to finish the proof. If we opt by using the first assignment rule introduced, then we first need to apply the consequence rule (due to the same reason presented in the previous example). Thus, to avoid the extra burden of applying the consequence rule, we opt by applying directly the updated Hoare logic rule for assignments.
+\begin{prooftree}
+\AxiomC{}
+\LeftLabel{(AssgU)}
+\RightLabel{if $(True \land i < j) \to ((i \leq i) \land i < j)$}
+\UnaryInfC{$\hoaret{True \land i < j}{min := i}{(min \leq i) \land (min \leq j)}$}
+\end{prooftree}
+
+The side condition generated is easy to show that is valid since $i \leq i$ is trivially valid. We conduct a similar reasoning for the other assumption generated by the conditional rule, that is:
+\begin{prooftree}
+\AxiomC{}
+\LeftLabel{(AssgU)}
+\RightLabel{if $(True \land \neg(i < j)) \to ((j \leq i) \land (j \leq j))$}
+\UnaryInfC{$\hoaret{True \land \neg(i < j)}{min := j}{(min \leq i) \land (min \leq j)}$}
+\end{prooftree}
+Following a similar reasoning, it is trivial to conclude that $j \leq j$ and that $\neg(i < j)$ is equivalent to $j \leq i$.
+
+
+\myparagraph{Exercise 11)} $\hoaret{s = 2^i}{\textbf{\kw{while}}\,i<n\,\{?\}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2}{s = 2^i}$\\\vspace{0.3cm}\\
+We are now entering more complex grounds; the reason is that, for this exercise, the student is asked to provide the loop invariant so that the calculation of the weakest precondition can be performed. But what could that loop invariant be? Looking into the Hoare triple, a reasonable choice seems to be $s = 2^i$ since this assertion is also established as precondition and postcondition for the triple. Lets try:
 \begin{align*}
-  \textbf{wprec}(\textbf{if}\,i<j\,\textbf{then}\,min := i\,\textbf{else}\,min := j,(min \leq i) \land (min \leq j)) & =\\
-  (i < j \to \textbf{wprec}(min := i, (min \leq i) \land (min \leq j)) 
-  \land 
-  (\neg(i<j) \to \textbf{wprec}(min :=j, (min \leq i) \land (min \leq j)) & =\\
-  (i < j \to ((min \leq i) \land (min \leq j))[min \mapsto i] \land (\neg(i < j) \to ((min \leq i) \land (min \leq j))[min \mapsto j] & =\\
-  (i < j \to ((i \leq i) \land i \leq j)) \land (\neg(i<j) \to ((j \leq i) \land (j \leq j))).
+  \textbf{wprec}(\textbf{\kw{while}}\,i<n\,\{s = 2^i\}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2,\horange{s = 2^i}) & = \\s = 2^i
 \end{align*}
-We now inspect both of them to check if they are correct. Note that here we can ignore the precondition since $True$ does not alter the results of these two parts of the weakest precondition generated. For the left part of the generated formular, we know from the hypothesis that $i < j$, meaning that $i \leq j$ also holds ($i \leq i$ holds trivially). For the right side, we know that $\neg(i < j)$ is the same as $j \leq i$ and hence the conclusion is also correct (note that $j \leq j$ also holds trivially).
+which trivially holds in what concerns the given precondition implying the weakest precondition generated. \\\vspace{0.2cm}\\ 
+
+\noindent\textbf{{\color{red}{Digression on Hoare Logic rules:}}} Again, for the sake of completeness, we will see how to prove the given Hoare triple using the Hoare logic rules. Lets first recall the (updated) Hoare logic rule for while loops:
+\begin{prooftree}
+\AxiomC{$\hoaret{B \land I}{C}{I}$}
+\RightLabel{if $P \to I$ and $I \land \neg B \to Q$}
+\UnaryInfC{$\hoaret{P}{\textbf{\kw{while}}\,B\,\horange{\{I\}}\,\textbf{\kw{do}}\,C}{Q}$}
+\end{prooftree}
+Instantiating the rule to our Hoare triple, we obtain:
+\begin{prooftree}
+\AxiomC{$\hoaret{(i < j) \land (s=2^i)}{i := i + 1; s := s*2}{s=2^i}$}
+%\RightLabel{if $s = 2^i \to s = 2^i$ and\\ $(s=2^i \land \neg(i < j)) \to s = 2^i$}
+\UnaryInfC{$\hoaret{s = 2^i}{\textbf{\kw{while}}\,(i < j)\,\horange{\{s = 2^i\}}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2}{s = 2^i}$}
+\end{prooftree}
+if $s = 2^i \to s = 2^i$ and $(s=2^i \land \neg(i < j)) \to s = 2^i$, which are both true. To finish the proof, we need now to apply the command sequence Hoare logic rule. This rule is defined as:
+\begin{prooftree}
+\AxiomC{$\hoaret{P}{C_1}{R}$}
+\AxiomC{$\hoaret{R}{C_1}{Q}$}
+\BinaryInfC{$\hoaret{P}{C_1;C_2}{Q}$}
+\end{prooftree}
+The challenge of applying this rule is to guess the specification for $R$. Since we have a sequence of assignments, a candidate specification is to define $R$ as $Q[x \mapsto E]$, which in the particular case we are handling amounts are stating that $R$ assumes the formula $s \times 2 = 2^i$, that is:
+\begin{prooftree}
+\AxiomC{$\hoaret{(i < j) \land (s=2^i)}{i := i + 1}{s\times 2=2^i}$}
+\AxiomC{$\hoaret{s\times 2=2^i}{s := s * 2}{s=2^i}$}
+\BinaryInfC{$\hoaret{(i < j) \land (s=2^i)}{i := i + 1; s := s*2}{s=2^i}$}
+\end{prooftree}
+Now, we have to prove $\hoaret{(i < j) \land (s=2^i)}{i := i + 1}{s\times 2=2^i}$, meaning that we will apply the updated Hoare logic assignment rule, which results in
+\begin{prooftree}
+\AxiomC{}
+\LeftLabel{}
+\RightLabel{if $((i < j) \land (s=2^i)) \to s\times 2=2^{i+1}$}
+\UnaryInfC{$\hoaret{(i < j) \land (s=2^i)}{i := i + 1}{s\times 2=2^i}$}
+\end{prooftree}
+whose side condition generated is true, since $s \times 2 = 2^{i+1}$ is equivalent to $s \times 2 = 2^i \times 2$ and we know from the hypotheses that $s = 2^i$. And this finishes our proof.
+
+\subsection*{Generation of Verification Conditions (Ex-2)}
+
+\myparagraph{Exercise 1)} $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$\\\vspace{0.3cm}\\
+We proceed by applying the VC algorithm, notably the case of assignment:\\
+
+\begin{tabular}{ll}
+$VC(\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)})$ & =\\
+$\{i = 5 \to ((a = 7) \land (i = 5))\hblue{[a \mapsto i + 2]}\}$ & =\\
+$\{i = 5 \to ((i+2=7) \land (i=5))\}$
+  
+\end{tabular}
 
 
+
+
+
+\myparagraph{Exercise 9)} $\hoaret{True}{\textbf{\kw{if}}\,i<j\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j}{(min \leq i) \land (min \leq j)}$\\\vspace{0.3cm}\\
+\myparagraph{Exercise 11)} $\hoaret{s = 2^i}{\textbf{\kw{while}}\,i<n\,\{?\}\,\textbf{\kw{do}}\,i := i +1 ;s := s*2}{s = 2^i}$\\\vspace{0.3cm}\\
 
 \end{document}
