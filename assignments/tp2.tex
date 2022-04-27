@@ -1,0 +1,180 @@
+\documentclass[11pt]{article}
+
+\usepackage[dvipsnames]{xcolor}
+\usepackage{bussproofs}
+\input{macros}
+
+\newcommand{\kw}[1]{{\color{OliveGreen}{#1}}}
+\newcommand{\horange}[1]{{\color{BurntOrange}{#1}}}
+\newcommand{\hblue}[1]{{\color{MidnightBlue}{#1}}}
+\newcommand{\hoaret}[3]{{\color{BurntOrange}{\{#1\}}}\,#2\,{\color{BurntOrange}{\{#3\}}}}
+
+\date{Formal Verification of Critical Applications -- 2021/2022}
+
+\begin{document}
+ 
+% --------------------------------------------------------------
+%                         Start here
+% --------------------------------------------------------------
+ 
+\title{Weakest Precondition and Verification Conditions Generation}
+\author{Jos\'{e} Proen\c{c}a \& David Pereira \& Eduardo Tovar
+\\
+\{pro,drp,emt\}@isep.ipp.pt}
+%\\
+%Arquitectura e C\'alculo -- 2015/2016} 
+ 
+\maketitle
+
+\descrbox{To do}{
+  Practice the calculation of weakest preconditions and of verification conditions for simple imperative programs.  
+}
+
+\descrbox{What to submit}{
+  There is nothing to submit. This is just a set of exercises for the students to practice and receive feedback during classes.
+}
+
+%\descrbox{How to submit using git}{
+%  \begin{enumerate}[itemsep=1pt,leftmargin=20pt]
+%    \item Create a private git repository in your favouring host (e.g., github or bitbucket).
+%    \item \textbf{Name it \bash{FVOCA22-g<group number>}.}
+%    \item Add \bash{pro@isep.ipp.pt} and \bash{drp@isep.ipp.pt} as members of the group (read-permissions are enough).
+%    \item Include all the files to be submitted in the repository.
+%  \end{enumerate}
+%  Note that \textbf{all students should push commits.}
+%}
+
+%\descrbox{Deadline}{
+%  1 May 2022 @ 23:59 (Sunday) 
+%}
+
+
+
+
+% \myparagraph{Deadline part II:} 31 May 2017 @ 23h59 (Wednesday)
+ 
+% \section*{Part I - Real time}
+
+%The train gate example is distributed with Uppaal. It is a railway control system which
+% - controls access to a bridge for several trains.
+%
+%BRIDGE: a critical shared resource that may be accessed only by one train at a time.
+%SYSTEM: a number of trains (assume 4 for this example) + a controller.
+%
+%TRAIN: sends approach, waits 10 secs for stop! signal,
+% - not stopped: after 10 more it reaches the gate/bridge;
+% - stopped: waits for a go! signal - takes 7-15 sec to reach the cross after go!.
+% - sends a leave! signal after passing.
+% - after reaching the cross - 3-5 sec to cross.
+% (5 locations: Safe, Appr-oaching, Stop-ping, Start-ting, and Cross-sing)
+%
+%GATE: syncs with queue/contr and trains
+% - Can be free or occupied,
+% - starts Free, becomes Occupied
+%CONTROLER/QUEUE: (not for 2 trains)
+%
+%Start has the invariant x <= 15 and its outgoing transition has the constraint x >= 7
+%
+%A train can not be stopped instantly and restarting also takes time. Therefor, there are timing constraints on the trains before entering the bridge. When approaching, a train sends a appr! signal. Thereafter, it has 10 time units to receive a stop signal. This allows it to stop safely before the bridge. After these 10 time units, it takes further 10 time units to reach the bridge if the train is not stopped. If a train is stopped, it resumes its course when the controller sends a go! signal to it after a previous train has left the bridge and sent a leave! signal.
+
+%-----------------------------------------------------------------------------
+%\begin{exercise} \label{ex:train}
+%\textbf{[Train bridge]}
+%Consider a train bridge over a river shared by multiple trains. In this exercise we will consider only 2 trains. Only one train can cross the bridge at a time - a \emph{gate} controls who is allowed to cross the bridge at a given time. The desired model of the train bridge has the following extra requirements:
+%%
+%\begin{itemize}
+%  \item a Train notifies the Gate when it approaches the bridge;
+%  \item the Gate has 10 time units to notify the Train to stop (if another train is crossing the bridge);
+%  \item if the Gate does not send a stop notification within 10 time units, the Train must reach the bridge in another 10 time units;
+%  \item each Train takes between 3 and 5 time units to cross the bridge -- after that it sends a notification to the Gate that it is leaving;
+%  \item if a Train is told to stop, we assume it will take between 7 and 15 time units to reach the bridge;
+%\end{itemize}
+%\end{exercise}
+
+\newcommand{\compn}[1]{\textsf{\textcolor{purple}{#1}}\xspace}
+\newcommand{\chn}[1]{\textsf{\textcolor{teal}{#1}}\xspace}
+
+\section*{Evaluating Hoare Triples}
+
+\myparagraph{Ex-1)} For each of the triples presented below, calculate the corresponding weakest precondition and show if the previously defined precondition implies the weakest one that you have produced. Moreover, for the cases of the triples involving while loops, please provide the adequate loop invariant.
+\begin{enumerate}
+  \item $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$
+  \item $\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i > 0)}$
+  \item $\{(i = 5) \land (a = 3)\}\,a := i + 2;\,\{a = 7\}$
+  \item $\{a = 7\}\,i := i + 2;\,\{a = 7\}$
+  \item $\{i = a - 1\}\,i := i + 2;\,\{i = a + 1\}$
+  \item $\{True\}\,a := i + 2;\,\{a = i + 2\}$
+  \item $\{a > b\}\,m := 1; n := a - b;\,\{m \times n > 0\}$
+  \item $\{s = 2^i\}\,i := i + 1;\,s := s * 2\,\{s = 2^i\}$
+  \item $\{True\}\,\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j\{(min \leq i) \land (min \leq j)\}$
+  \item $\{(i > 0) \land (j > 0)\}\,\textbf{\kw{if}}\,(i<j)\,\textbf{\kw{then}}\,min := i\,\textbf{\kw{else}}\,min := j\,\{min > 0\}$
+  \item $\{s = 2^i\}\,\textbf{while}\,i<n\,\{?\}\,\textbf{do}\,i := i +1 ;s := s*2\,\{s = 2^i\}$
+  \item $\{(s = 2^i) \land (i \leq n)\}\,\textbf{while}\,i<n\,\{?\}\,\textbf{do}\,i := i +1 ;s := s*2\,\{s = 2^n\}$
+\end{enumerate}
+
+
+\myparagraph{Ex-2)} For each of the Hoare triples presented in the previous exercise, apply the two VC generation algorithms introduced in the classes.
+
+\section*{Solutions to selected exercises}
+
+\subsection*{Weakest Precondition Generation (Ex-1)}
+
+\myparagraph{Exercise 1)} $\{i = 5\}\,a := i + 2;\,\{(a = 7) \land (i = 5)\}$\\\vspace{0.3cm}\\
+For calculating the weakest precondition we will use the \textbf{wprec} function. It is straightforward to compute it:
+\begin{align*}
+  \textbf{wprec}(a := i + 2,\horange{(a = 7) \land (i = 5)}) & =\\
+  \horange{((a = 7) \land (i = 5))}\hblue{[a \mapsto i + 2]} & =\\
+  (i + 2 = 7) \land (i = 5)
+\end{align*}
+Next, we show that the defined precondition $i=5$ logically implies the weakest precondition generated; that is: $i = 5 \to (i + 2 = 7) \land (i = 5)$, which is easy to prove that it is valid.\\\vspace{0.2cm}\\\textbf{{\color{red}{Digression on Hoare Logic rules:}}} We start by recalling the first Hoare logic rule for assignments:\\
+
+\begin{prooftree}
+\AxiomC{}
+\UnaryInfC{$\hoaret{Q[x \mapsto E}{x:=e}{Q}$}
+\end{prooftree}\vspace{0.2cm}
+This problem with this rule is the fact that it is too rigid:  it cannot be applied directly to the post condition $(a = 7) \land (i = 5)$, since $((a = 7) \land (i = 5))[a \mapsto i + 2]$ reduces to $((i + 2 = 7) \land (i=5))$ which does not match $i = 5$, that is, the defined precondition. For solving this issue, the solution consists in first applying the consequence rule
+\begin{prooftree}
+\AxiomC{$\hoaret{P'}{C}{Q'}$}
+\RightLabel{, if $\horange{P \to P'}$ and $\horange{Q' \to Q}$}
+\UnaryInfC{$\hoaret{P}{C}{Q}$}
+\end{prooftree}
+We can use this rule to match the $Q[x \mapsto E]$ that we need so that we can apply the assignment rule. The proof tree presented below shows exactly how that is done.
+\begin{prooftree}
+\AxiomC{}
+\LeftLabel{(Assignment)}
+\UnaryInfC{$\hoaret{(i + 2 = 7) \land (i = 5)}{a := i + 2}{(a = 7) \land (i = 5)}$}
+\LeftLabel{(Consequence)}
+\RightLabel{if $i = 5 \to (i + 2 = 7) \land (i = 5)$}
+\UnaryInfC{$\hoaret{i = 5}{a := i + 2}{(a = 7) \land (i = 5)}$}  
+\end{prooftree}\vspace{0.3cm}
+In the proof tree above, the side condition $i = 5 \to (i + 2 = 7) \land (i = 5)$ is captured by the formula scheme $P \to P'$ of the consequence rule. Also, we know already that this implication is valid.\\
+Recall also that we have introduced an updated version of Hoare logic's assignment axiom, that is more flexible by not requiring the assertion $Q[x \mapsto E]$ as precondition, by generating a side condition similar to the one generated when we applied the consequence rule. The rule is 
+\begin{prooftree}
+\AxiomC{}
+\RightLabel{, if $P \to Q[x \mapsto E]$}
+\UnaryInfC{$\{P\}\,x:=e\,\{Q\}$}
+\end{prooftree}\vspace{0.2cm}
+Applying this rule goes as follows:
+\begin{prooftree}
+\AxiomC{}
+\LeftLabel{(Assignment)}
+\RightLabel{if $i = 5 \to (i + 2 = 7) \land (i = 5)$}
+\UnaryInfC{$\{i = 5\}\,a := i + 2;\,\{(a = 7) \land (i = 5)\}$}  
+\end{prooftree}\vspace{0.3cm}
+
+
+\myparagraph{Exercise 9)} $\{True\}\,\textbf{if}\,i<j\,\textbf{then}\,min := i\,\textbf{else}\,min := j\{(min \leq i) \land (min \leq j)\}$\\\vspace{0.3cm}\\
+We preceed as we did in the previous explanation:
+\begin{align*}
+  \textbf{wprec}(\textbf{if}\,i<j\,\textbf{then}\,min := i\,\textbf{else}\,min := j,(min \leq i) \land (min \leq j)) & =\\
+  (i < j \to \textbf{wprec}(min := i, (min \leq i) \land (min \leq j)) 
+  \land 
+  (\neg(i<j) \to \textbf{wprec}(min :=j, (min \leq i) \land (min \leq j)) & =\\
+  (i < j \to ((min \leq i) \land (min \leq j))[min \mapsto i] \land (\neg(i < j) \to ((min \leq i) \land (min \leq j))[min \mapsto j] & =\\
+  (i < j \to ((i \leq i) \land i \leq j)) \land (\neg(i<j) \to ((j \leq i) \land (j \leq j))).
+\end{align*}
+We now inspect both of them to check if they are correct. Note that here we can ignore the precondition since $True$ does not alter the results of these two parts of the weakest precondition generated. For the left part of the generated formular, we know from the hypothesis that $i < j$, meaning that $i \leq j$ also holds ($i \leq i$ holds trivially). For the right side, we know that $\neg(i < j)$ is the same as $j \leq i$ and hence the conclusion is also correct (note that $j \leq j$ also holds trivially).
+
+
+
+\end{document}

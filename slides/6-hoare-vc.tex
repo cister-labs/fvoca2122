@@ -1,0 +1,457 @@
+\documentclass[aspectratio=169]{beamer}
+
+\input{macros/beamerconf}
+\input{macros/preamble}
+\input{macros/macros}
+\usepackage{bussproofs}
+
+
+\setLecture{3}{Hoare Logic and Verification Condition Generation}
+
+% \title{
+% 	RAMDE -- Requirements and Model-driven Engineering 
+% 	}
+% \author{David Pereira \and Jos\'{e} Proen\c{c}a}
+% \institute{CISTER -- ISEP \\ Porto, Portugal}
+% \date{MScCCSE 2020/21}
+
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+
+\section{Recap Hoare Logic}
+
+\newcommand{\kw}[1]{\structure{\text{#1}}}
+
+\begin{slide}{Recall the target language's syntax}
+  The syntax of the language that we will be using is an extension of the basic Imperative Language with logical assertions, plus the concept of \textbf{Hoare Triple}. 
+  \begin{align*}
+  x &~\in~ \text{Identifiers}
+  \\
+  n &~\in~ \mathbb{Z}
+  \\
+  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B~ \&\& B ~~|~~ B ~||~ B ~~|~~ ! B ~~|~~ E<E ~~|~~ E=E
+  \tag{boolean-expr}\\
+  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+  \tag{int-expr}\\
+  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
+ ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
+  \tag{command}\\
+  A &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ E<E ~~|~~ E=E ~~|~~ A \land A ~~|~~ A \lor A ~~|~~ \lnot A ~~|~~ A \to A\\
+  &~~~~~|~~  \forall x. A ~~|~~\exists x.A \tag{assertions}\\
+  S & ~::=~ \{\alert{A}\}\;C\;\{\alert{A}\}\tag{specification/Hoare Triple}
+\end{align*}
+\end{slide}
+
+\begin{slide}{Hoare Triples - review}
+  
+  \begin{block}{Core concept}
+    The atomic concept that we will be using in order to reason about the partial correctness of programs is that known as {\em Hoare Triple}. It is a specification of the form $$\{P\}\,C\,\{Q\}$$ that reads as follows: for all states satisfying the {\em \alert{precondition}} $P$, if the program $C$ executes and terminates in a state satisfying the {\em \alert{postcondition}} $Q$, then the triple is valid.
+  \end{block}
+  \begin{block}{Design by Contract}
+  These preconditions and postconditions, as well as other types of logical specifications that we will see ahead, are also known as {\em {\bf contracts}}, that is, they bound the developer to implement code that satisfies the prescribed logical specifications to ensure partial correctness.
+  \end{block}
+\end{slide}
+
+\section*{Hoare Logic}
+
+\begin{slide}{Validity of Hoare Triples}
+\begin{block}{How to check the validity of Hoare Triples?}
+  \begin{itemize}
+    \item the usual method for assuring the validity of Hoare Triples is to use a {\bf sound}
+program-proof system. 
+  \item by sound one means that it should not allow to conclude specifications that are not valid. 
+  \end{itemize}
+\end{block}
+\begin{block}{Program-Proof System}
+  A program-proof system is a set of inference rules that can be seen as fundamental laws about programs. In the next slides, we will present such rules. 
+\end{block}  
+\end{slide}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+\begin{block}{The case of the \kw{skip} command}
+The \kw{skip} command does not change the state of the program. Hence, the precondition and postconditions must be the same.
+  \begin{prooftree}
+       \AxiomC{$$}
+       \UnaryInfC{$\{P\}\;\kw{skip}\;\{P\}$}
+  \end{prooftree} 
+\end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of the assignment command}
+  The assignment rule states that a postcondition $Q$ can be granted for an assignment command if the condition that results from substituting $E$ for $x$ in $Q$ holds as precondition.
+  
+  %In the case of assignment, the value assigned to a variable is (possibly) changed, and thus we need to show that the precondition $P$ implies the postcondition $Q$ with the value of the variable $x$ replace by the value of the expression $E$.
+    \begin{prooftree}
+      \AxiomC{$$}
+      \UnaryInfC{$\{Q[x \mapsto E]\}\;x:=\,E\;\{Q\}$}
+    \end{prooftree}
+  \end{block}
+  \begin{block}{Instances of the above axiom}
+    \begin{itemize}
+      \item $\{Y = \kw{2}\}\;x := 2\;\{Y = \kw{X}\}$  
+      \item $\{\kw{x + 1} = n + 1\}\;x := x + 1\;\{\kw{x} = n + 1\}$    
+      \item $\{\kw{E} = E\}\;x := E\;\{\kw{x} = E\}$  
+    \end{itemize}
+
+  \end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of command sequence}
+  When in the presence of a sequence of commands, we must prove that if the first command $C_1$ terminates in a postcondition $R$ then, the second command $C_2$, satisfying $R$ at start, if terminates, must do so in the prescribed postcondition $Q$.
+    \begin{prooftree}
+      \AxiomC{$\{P\} C_1 \{R\}$}
+      \AxiomC{$\{R\} C_2 \{Q\}$}
+      \BinaryInfC{$\{P\} C_1\,\textbf{;}\,C_2 \{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{frame}{An example of the sequence rule}
+  \begin{block}{A short example}
+  By the assignment axiom we have:
+  \begin{itemize}
+  \item [(i)]$\{X = x \land Y = y\}\;R := X\;\{R=x \land Y=y\}$ 
+  \item [(ii)]$\{R = x \land Y = y\}\;X := Y\;\{R=x \land X=y\}$
+  \item [(iii)]$\{R = x \land X = y\}\;Y := R\;\{Y=x \land X=y\}$
+  \end{itemize}
+  By (i) and (ii) and the sequence rule we obtain
+  $$(iv)\:\:\{X = x \land Y = y\}\;R := X; X := Y\;\{R=x \land Y=y\}$$
+  Now, by (iv) and (iii) we finish the deduction
+  $$\{X = x \land Y = y\}\;R := X; X := Y;Y := R\;\{Y=x \land X=y\}$$
+  \end{block}
+\end{frame}
+
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of conditionals}
+  In the case of conditionals, one must prove that independently of the value of the Boolean $B$ that serves as a guarda for the conditional. 
+    \begin{prooftree}
+      \AxiomC{$\{B \land P\}\,C_1\,\{Q\}$}
+      \AxiomC{$\{\neg B \land P\}\,C_2\,\{Q\}$}
+      \BinaryInfC{$\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}$}
+    \end{prooftree}
+  \end{block}
+
+
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case fo while loops}
+  In the case of loops, we need to prove an invariant $I$ (i.e., a condition that must hold at the entry and exit of the loop) throughout all the iterations of the loop (we don't know beforehand how many will be). 
+    \begin{prooftree}
+      \AxiomC{$\{B \land I\}\,C_1\,\{I\}$}
+      \UnaryInfC{$\{I\}\,\kw{while}\;B\;\kw{do}\;C_1\{I \land \neg B\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case of logical consequence}
+    This one is a special rule that deals only with logical assertions. It establishes a connection with first-order logic by means of side conditions that are assertions rather than specifications.     
+    \begin{prooftree}
+%      \AxiomC{$P \to P_1$}
+       \AxiomC{$\{P_1\}\,C\,\{Q_1\}$}
+%       \AxiomC{$Q_1 \to Q$}
+       \UnaryInfC{$\{P\}\,C\,\{Q\}$}     
+    \end{prooftree}
+    if $P \to P_1$ and $Q_1 \to Q$ hold (these are called side-conditions of the rule). Note also that this rule implies that Hoare logic is not meant to be used by itself; it must always be accompanied by some device for establishing the validity of side conditions, such as a decision procedure based on satisfiability, or an inference system for first-order logic.
+  \end{block}
+\end{frame}
+
+
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{A simple example using the logical consequence rule}
+  The small derivation below shows the applicability of the logical consequence rule, followed by the assignment rule. The logical consequence rule generates two side effects which can be trivially proved, and enables the application of the assignment rule.
+    \begin{prooftree}
+      \AxiomC{}
+      \RightLabel{(assignment rule)}
+      \UnaryInfC{$\{x + 1 > 10\}\;x := x + 1\;\{x > 10\}$}
+      \RightLabel{if $x > 10 \to x + 1 > 10$ and $x > 10 \to x > 10$}
+      \UnaryInfC{$\{x > 10\}\;x := x + 1\;\{x > 10\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{slide}{How to deal with Hoare Logic proofs}
+  \begin{block}{Two ways}
+  \begin{itemize}
+    \item directly encoding the inference system in the logic of the proof tool and reasoning simultaneously with rules of both Hoare logic and first-order logic as required: reasoning starts with the former but switches to the latter logic when side conditions are introduced by the consequence rule.
+    \item The alternative approach consists in two steps:
+      \begin{itemize}
+        \item A \textbf{proof tree} is constructed for the desired specification, assuming that the side conditions generated by the consequence rule are valid
+        \item An external proof tool is used (such as a theorem prover or a proof assistant) to actually establish the validity of the side conditions
+        \item several proof trees can be created for the same specification (e.g., in the previous example we could weaken the precondition $x > 10$ to $x + 2 > 10$ instead of $x + 1 > 10$, meaning that we would obtain two different proof trees that would give the same conclusion.
+      \end{itemize}
+  \end{itemize}
+  \end{block}
+\end{slide}
+
+\begin{slide}{On Verification Conditions Generation}
+\begin{block}{From proof trees to algorithms}
+  We have stated that a proof tree must be constructed to perform verification using Hoare Logic. When we close all the trees via the application of one of the rules that represents an axiom (e.g., skip rule or assignment rule), then we can state that a valid proof is obtained. Still, it is a manual process, which we would really like to avoid.
+\end{block}
+
+\begin{block}{Verification Conditions Generation}
+The process of constructing a proof tree can, fortunately, be replaced by an algorithm. This algorithm, called \textbf{Verification Conditions Generator}, or \textbf{VCGen} for short, applies a particular strategy for producing verification conditions that correspond to the side conditions of a particular derivation  
+\end{block}
+
+\end{slide}
+
+\begin{slide}{Verification Conditions Generation}
+
+\begin{block}{How do these VCGen work?}
+  A VCGen algorithm takes as input a Hoare Triple $\{P\}\;C\;\{Q\}$ and returns a set of first-order logic proof obligations (recall that assertions/specifications are first-order logic formulas). As mentioned already, these proof obligations represent side conditions of the form $F_1 \to F_2$, but where program variables need to be scoped by a universal quantifier ($\forall x, F_1 \to F_2$ in this case) to ensure validity. 
+\end{block}
+
+\begin{block}{Example}
+  Again looking at the example presented for the logic consequence rule of Hoare logic, the side condition $x > 10 \to x + 1 > 10$ in reality should be $\forall x, x > 10 \to x + 1 > 10$. That is, we prove that this side condition is a theorem!!!
+\end{block}
+
+\alert{Important:} there are two possible sources of erros that may cause verification of a Hoare triple to fail: (1) program errors and (2) specification errors!
+
+\end{slide}
+
+\section*{Alternative Formulation of Hoare Logic}
+
+\begin{slide}{Towards a new formulation}
+\begin{block}{Desirable properties}
+  \begin{itemize}
+  \item \textit{subformula property:} the premises of a rule should not contain occurrences of assertions that do not appear in the rule's conclusion (otherwise we have to invent formulas).
+  \item \textit{unambiguity:} a unique rule should be applicable in a backward fashion for the goal at hand, so that the construction of the proof tree is syntax-directed (and thus algorithmic). 
+\end{itemize}
+\end{block}
+
+\alert{We start by addressing the second desirable property, i.e., syntax-directed rules!}
+\end{slide}
+
+\begin{slide}{Syntax directed Hoare logic}
+\begin{block}{Undesired properties of original formulation}
+  \begin{itemize}
+  \item the \kw{skip} rule can only be applied if the precondition and post condition are the same;
+  \item the \kw{assign} rule can only be applied if the precondition results from the postcondition by performing the corresponding substitution;
+  \item the \kw{while} rule can only be applied if the precondition is an invariant of the loop, and the postcondition is the same invariant "strenghtened" with the negation of the loop condition. 
+  \end{itemize}
+\end{block}
+
+\begin{alertblock}{Important:}
+the application of the above rules to goals with arbitrary preconditions and postconditions may very well require the application of the consequence rule! So this rule has to be embedded somehow in a new set of rules to be syntax-directed!!!  
+\end{alertblock}
+\end{slide}
+
+\begin{frame}[fragile]{Revised Program-Proof System Rules}
+\begin{block}{The case of the \kw{skip} command}
+The \kw{skip} command does not change the state of the program. Hence, the precondition and postconditions must be the same.
+  \begin{prooftree}
+       \AxiomC{$$}
+       \UnaryInfC{$\{P\}\;\kw{skip}\;\{P\}$}
+  \end{prooftree} 
+By incorporating the consequence rule, we obtain a new rule:
+  \begin{prooftree}
+       \AxiomC{$$}
+       \RightLabel{if $P \to Q$}
+       \UnaryInfC{$\{P\}\;\kw{skip}\;\{Q\}$}
+  \end{prooftree} 
+\end{block}
+
+\end{frame}
+
+\begin{frame}[fragile]{Revised Program-Proof System Rules}
+  \begin{block}{The case of the assignment command}
+  The assignment rule states that a postcondition $Q$ can be granted for an assignment command if the condition that results from substituting $E$ for $x$ in $Q$ holds as precondition.
+    \begin{prooftree}
+      \AxiomC{$$}
+      \UnaryInfC{$\{Q[x \mapsto E]\}\;x:=\,E\;\{Q\}$}
+    \end{prooftree}
+By incorporating the consequence rule, we obtain a new rule:
+  \begin{prooftree}
+      \AxiomC{$$}
+      \RightLabel{if $P \to Q[x \mapsto E]$}
+      \UnaryInfC{$\{P\}\;x:=\,E\;\{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{frame}[fragile]{The Program-Proof System Rules}
+  \begin{block}{The case fo while loops}
+  In the case of loops, we need to prove an invariant $I$ (i.e., a condition that must hold at the entry and exit of the loop) throughout all the iterations of the loop (we don't know beforehand how many will be). 
+    \begin{prooftree}
+      \AxiomC{$\{B \land I\}\,C_1\,\{I\}$}
+      \UnaryInfC{$\{I\}\,\kw{while}\;B\;\kw{do}\;C_1\{I \land \neg B\}$}
+    \end{prooftree}
+    By incorporating the consequence rule, we obtain a new rule:
+    \begin{prooftree}
+      \AxiomC{$\{B \land I\}\,C\,\{I\}$}
+      \RightLabel{if $P \to I$ and $I \land \neg B \to Q$}
+      \UnaryInfC{$\{P\}\,\kw{while}\;B\;\kw{do}\;C\{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{slide}{Almost there to define a VCGen}
+  \begin{block}{Goal directed but no sub-formula property}
+    We can definitely state that the new rules provide Hoare logic with a syntax-directed approach: it consists of \textbf{exactly one rule for each program construct}, and moreover, for a given specification $\{P\}\;C\;\{Q\}$, the rule matching the program $C$ can always be applied (granted that side conditions are met!), since the precondition and postcondition are now arbitrary.
+  \end{block}
+  
+  \begin{alertblock}{No sub-formula property}
+    \begin{itemize}
+    \item the while rule lost the property since the invariant assertion no longer occurs in the conclusion
+    \item the rule for the sequence construct does not enjoy the property either, since the intermediate assertion R does not occur in the conclusion  
+    \end{itemize}
+  \end{alertblock}
+\end{slide}
+
+\section*{Program Annotations}
+
+
+\begin{slide}{The role of program annotations}
+\begin{block}{Restoring the subformula property}  
+  One way to restore the subformula property in our current system for Hoare logic is precisely to introduce \textbf{human-provided annotations} in the programs. An annotated program is a \textbf{program with assertions embedded within it}.  
+\end{block}
+\begin{block}{Extending the language of commands}
+\begin{align*}
+  C &~::=~ \kw {skip} ~~|~~ C;\{\alert{A}\}\,C ~~|~~ x:=E
+ ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\{\alert{A}\}\,C
+\end{align*}  
+\end{block}
+\end{slide}
+
+\begin{slide}{Some examples}
+\begin{block}{Example 1}
+For instance, the command $$\kw{while}\,B\,\kw{do}\,\{I\}\,C$$ denotes a loop with condition $B$ and user-provided invariant $I$.  
+\end{block}
+\begin{block}{Example 2}
+For instance, the command $C_1;\,\{A\}\,C_2$ has the same meaning ot $C;C$ but the assertion $A$ must be true when the execution of $C_1$ terminates.
+\end{block}
+\end{slide}
+
+
+\begin{frame}[fragile]{Updating the sequence rule}
+  \begin{block}{The new case of command sequence}
+  When in the presence of a sequence of commands, we must prove that if the first command $C_1$ terminates in a postcondition $R$ then, the second command $C_2$, satisfying $R$ at start, if terminates, must do so in the prescribed postcondition $Q$.
+    \begin{prooftree}
+      \AxiomC{$\{P\} C_1 \{\alert{R}\}$}
+      \AxiomC{$\{\alert{R}\} C_2 \{Q\}$}
+      \BinaryInfC{$\{P\} C_1\,\{\alert{R}\}\textbf{;}\,C_2 \{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{slide}{Example of annotated Fibonnaci program}
+\begin{center}
+\includegraphics[scale=0.3]{images/fib}
+\end{center}
+\end{slide}
+
+\begin{frame}[fragile]{Extending the annotation to while loops}
+  \begin{block}{The case fo while loops}
+  The new rule for while loops now considers the invariant as an annotation:
+    \begin{prooftree}
+      \AxiomC{$\{B \land I\}\,C\,\{I\}$}
+      \RightLabel{if $P \to I$ and $I \land \neg B \to Q$}
+      \UnaryInfC{$\{P\}\,\kw{while}\;B\;\kw{do}\;\{I\}\;C\;\{Q\}$}
+    \end{prooftree}
+  \end{block}
+\end{frame}
+
+\begin{slide}{Propagation of annotations in code}
+Annotating a program is definitely a tedious and error prone task. Nevertheless, there are two ways to achieve it: vai forward propagation or via backward propagation. Lets understand these via examples. Consider the following code:
+\begin{center}
+\includegraphics[scale=0.5]{images/ex_code}  
+\end{center}
+\end{slide}
+
+\begin{slide}{Results from propagation}
+\begin{center}
+\includegraphics[scale=0.5]{images/ex_code_prop}  
+\end{center}
+  
+\end{slide}
+
+\section*{Weakest Preconditions}
+
+\begin{slide}{Weakest Preconditions}
+  \begin{block}{A new look at back propagation of annotations}
+  \begin{itemize}
+  \item we have seen that back propagating annotations from postconditions works
+  \item it can be realised as an algorithm
+  \item such algorithm generates the so-called \textbf{weakest preconditions} of an annotated code starting from its postcondition, that is, the weakes conditions that ensure that a program $C$ satisfies the postcondition $Q$ if it terminates, that is $$\{\mathrm{wprec}(C,Q)\}\,C\,\{Q\}$$
+  \item if we are able to prove that a precondition $p \to \mathrm{wprec}(C,Q)$ holds, then we can use this weakest precondition generation algorithm to help building the proof tree!
+  \end{itemize}
+  \end{block}
+\end{slide}
+
+\begin{slide}{Algorithm for weakest precondition generation}
+  \begin{align*}
+  wprec(\kw{skip},Q) & ~=~ Q\\
+  wprec(x := E,Q)    & ~=~Q[x \mapsto E]\\
+  wprec(C_1;C_2,Q)   & ~=~ wprec(C_1,wprec(C_2,Q))\\
+  wprec(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ (B \to wprec(C_1,Q)) \land (\neg B \to wprec(C_2,Q))\\
+  wprec(\kw{while}\,B\,\kw{do}\,\{I\}\,C,Q) & ~=~ I
+\end{align*}
+\end{slide}
+
+\begin{slide}{Algorithm for generating Verification Conditions}
+ \begin{align*}
+ VC(\{P\}\,\kw{skip}\{Q\}) & ~=~ \{P \to Q\} \\
+ VC(\{P\}\,x := E\,\{Q\})  & ~=~ \{P \to Q[x \mapsto E]\} \\
+ VC(\{P\}\,C_1;C_2\,\{Q\}) & ~=~ VC(\{P\}\,C_1\,\{wprec(C_2,Q)\}) \\ &\:\:\:\:\:\:\:\:\:\cup \\& \:\:\:\:\:\:\:\:VC(\{wprec(C_2,Q)\}\,C_2\,\{Q\})  
+ \end{align*}
+
+\end{slide}
+
+\begin{slide}{Algorithm for generating Verification Conditions}
+ \begin{align*}
+ VC(\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}) & ~=~ VC(\{P \land B\}\,C_1\{Q\}) \\ &\:\:\:\:\:\:\:\:\:\cup \\& \:\:\:\:\:\:\:\:VC(\{P \land \neg B\}\,C_2\,\{Q\}) \\
+ VC(\{P\}\,\kw{while}\,B\,\kw{do}\,\{I\}\,C\,\{Q\}) & ~=~ \{ P \to I , I \land \neg B \to Q\} \\ &\:\:\:\:\:\:\:\:\:\cup \\& \:\:\:\:\:\:\:\: VC(\{P \land \neg B\}\,C\,\{Q\}) 
+ \end{align*}
+
+\end{slide}
+
+\begin{slide}{Improved Verification Condition Generation}
+\begin{align*}
+VC(\lw{skip},Q) & ~=~ \emptyset\\
+VC(x := e,Q)    & ~=~ \emptyset\\
+VC(C_1;C_2,Q)   & ~=~ VC(C_1,wprec(C_2,Q)) \cup VC(C_2,Q)\\
+VC(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ VC(C_1,Q) \cup VC(C_2,Q)\\
+VC(\kw{while}\,B\,\kw{do}\,\{I\}\,C) & ~=~ \{ (I \land B) \to wprec(C,I) \} \cup VC(C,I)\\
+& \:\:\:\:\:\:\:\:\:\{(I \land \neg B) \to Q\}\\
+& \\
+VCG(\{P\}\,C\,\{Q\}) & ~=~ \{P \to wprec(C,Q)\} \cup VC(C,Q)
+\end{align*}
+\end{slide}
+
+
+
+%\begin{slide}{While$^{Int}$ with assertions -- Syntax}
+%\small
+%\begin{align*}
+%  x &~\in~ \text{Identifiers}
+%  \\
+%  n &~\in~ \text{Numerals}
+%  \\
+%  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+%  \tag{boolean-expr}\\
+%  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+%  \tag{int-expr}\\
+%  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
+%    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+%  \tag{command}\\
+%  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+%    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+%\end{align*}
+%
+%Assume operators to be left associative.
+%\\Use `\{' and `\}' to clarify precedence when necessary.
+%
+%\end{slide}
+
+
+
+\end{document}

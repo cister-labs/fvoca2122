@@ -1,0 +1,969 @@
+\documentclass[aspectratio=169]{beamer}
+
+\input{macros/beamerconf}
+\input{macros/preamble}
+\input{macros/macros}
+\usepackage{bussproofs}
+\usepackage{listings}
+
+
+\setLecture{3}{Hoare Logic and Verification Condition Generation\\\small{Continued}}
+
+% \title{
+% 	RAMDE -- Requirements and Model-driven Engineering 
+% 	}
+% \author{David Pereira \and Jos\'{e} Proen\c{c}a}
+% \institute{CISTER -- ISEP \\ Porto, Portugal}
+% \date{MScCCSE 2020/21}
+
+
+\begin{document}
+
+\frame[plain]{\titlepage}
+
+
+%\section{The Simple Imperative Language\\\small{With Assertions and Specifications}}
+
+\newcommand{\kw}[1]{\structure{\text{#1}}}
+
+
+%\begin{slide}{Hoare Triples - review}
+%  
+%  \begin{block}{Core concept}
+%    The atomic concept that we will be using in order to reason about the partial correctness of programs is that known as {\em Hoare Triple}. It is a specification of the form $$\{P\}\,C\,\{Q\}$$ that reads as follows: for all states satisfying the {\em \alert{precondition}} $P$, if the program $C$ executes and terminates in a state satisfying the {\em \alert{postcondition}} $Q$, then the triple is valid.
+%  \end{block}
+%%  \begin{block}{Design by Contract}
+%%  These preconditions and postconditions, as well as other types of logical specifications that we will see ahead, are also known as {\em {\bf contracts}}, that is, they bound the developer to implement code that satisfies the prescribed logical specifications to ensure partial correctness.
+%%  \end{block}
+%\end{slide}
+
+%\begin{slide}{A language for Hoare Triples}
+%  The syntax of the language that we will be using is an extension of the basic Imperative Language with logical assertions, plus the concept of \textbf{Hoare Triple}. 
+%  \begin{align*}
+%  x &~\in~ \text{Identifiers}
+%  \\
+%  n &~\in~ \mathbb{Z}
+%  \\
+%  B &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ B~ \&\& B ~~|~~ B ~||~ B ~~|~~ ! B ~~|~~ E<E ~~|~~ E=E
+%  \tag{boolean-expr}\\
+%  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+%  \tag{int-expr}\\
+%  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ x:=E
+% ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }C
+%  \tag{command}\\
+%  A &~::=~ \kw{true} ~~|~~ \kw{false}  ~~|~~ E<E ~~|~~ E=E ~~|~~ A \land A ~~|~~ A \lor A ~~|~~ \lnot A ~~|~~ A \to A\\
+%  &~~~~~|~~  \forall x. A ~~|~~\exists x.A \tag{assertions}\\
+%  S & ~::=~ \{\alert{A}\}\;C\;\{\alert{A}\}\tag{specification/Hoare Triple}
+%\end{align*}
+%\end{slide}
+
+%\section*{Hoare Logic\\\small{Proof Rules and Verification Conditions Generation}}
+
+%\begin{slide}{Validity of Hoare Triples}
+%\begin{block}{How to check the validity of Hoare Triples?}
+%  \begin{itemize}
+%    \item the usual method for assuring the validity of Hoare Triples is to use a {\bf sound}
+%program-proof system. 
+%  \item by sound one means that it should not allow to conclude specifications that are not valid. 
+%  \end{itemize}
+%\end{block}
+%\begin{block}{Program-Proof System}
+%  A program-proof system is a set of inference rules that can be seen as fundamental laws about programs. In the next slides, we will present such rules. 
+%\end{block}  
+%\end{slide}
+
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%\begin{block}{The case of the \kw{skip} command}
+%The \kw{skip} command does not change the state of the program. Hence, the precondition and postconditions must be the same.
+%  \begin{prooftree}
+%       \AxiomC{$$}
+%       \UnaryInfC{$\{P\}\;\kw{skip}\;\{P\}$}
+%  \end{prooftree} 
+%\end{block}
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case of the assignment command}
+%  The assignment rule states that a postcondition $Q$ can be granted for an assignment command if the condition that results from substituting $E$ for $x$ in $Q$ holds as precondition.
+%  
+%  %In the case of assignment, the value assigned to a variable is (possibly) changed, and thus we need to show that the precondition $P$ implies the postcondition $Q$ with the value of the variable $x$ replace by the value of the expression $E$.
+%    \begin{prooftree}
+%      \AxiomC{$$}
+%      \UnaryInfC{$\{Q[x \mapsto E]\}\;x:=\,E\;\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%  \begin{block}{Instances of the above axiom}
+%    \begin{itemize}
+%      \item $\{Y = \kw{2}\}\;x := 2\;\{Y = \kw{X}\}$  
+%      \item $\{\kw{x + 1} = n + 1\}\;x := x + 1\;\{\kw{x} = n + 1\}$    
+%      \item $\{\kw{E} = E\}\;x := E\;\{\kw{x} = E\}$  
+%    \end{itemize}
+%
+%  \end{block}
+%
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case of command sequence}
+%  When in the presence of a sequence of commands, we must prove that if the first command $C_1$ terminates in a postcondition $R$ then, the second command $C_2$, satisfying $R$ at start, if terminates, must do so in the prescribed postcondition $Q$.
+%    \begin{prooftree}
+%      \AxiomC{$\{P\} C_1 \{R\}$}
+%      \AxiomC{$\{R\} C_2 \{Q\}$}
+%      \BinaryInfC{$\{P\} C_1\,\textbf{;}\,C_2 \{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%\end{frame}
+%
+%\begin{frame}{An example of the sequence rule}
+%  \begin{block}{A short example}
+%  By the assignment axiom we have:
+%  \begin{itemize}
+%  \item [(i)]$\{X = x \land Y = y\}\;R := X\;\{R=x \land Y=y\}$ 
+%  \item [(ii)]$\{R = x \land Y = y\}\;X := Y\;\{R=x \land X=y\}$
+%  \item [(iii)]$\{R = x \land X = y\}\;Y := R\;\{Y=x \land X=y\}$
+%  \end{itemize}
+%  By (i) and (ii) and the sequence rule we obtain
+%  $$(iv)\:\:\{X = x \land Y = y\}\;R := X; X := Y\;\{R=x \land Y=y\}$$
+%  Now, by (iv) and (iii) we finish the deduction
+%  $$\{X = x \land Y = y\}\;R := X; X := Y;Y := R\;\{Y=x \land X=y\}$$
+%  \end{block}
+%\end{frame}
+%
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case of conditionals}
+%  In the case of conditionals, one must prove that independently of the value of the Boolean $B$ that serves as a guarda for the conditional. 
+%    \begin{prooftree}
+%      \AxiomC{$\{B \land P\}\,C_1\,\{Q\}$}
+%      \AxiomC{$\{\neg B \land P\}\,C_2\,\{Q\}$}
+%      \BinaryInfC{$\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%
+%
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case fo while loops}
+%  In the case of loops, we need to prove an invariant $I$ (i.e., a condition that must hold at the entry and exit of the loop) throughout all the iterations of the loop (we don't know beforehand how many will be). 
+%    \begin{prooftree}
+%      \AxiomC{$\{B \land I\}\,C_1\,\{I\}$}
+%      \UnaryInfC{$\{I\}\,\kw{while}\;B\;\kw{do}\;C_1\{I \land \neg B\}$}
+%    \end{prooftree}
+%  \end{block}
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case of logical consequence}
+%    This one is a special rule that deals only with logical assertions. It establishes a connection with first-order logic by means of side conditions that are assertions rather than specifications.     
+%    \begin{prooftree}
+%%      \AxiomC{$P \to P_1$}
+%       \AxiomC{$\{P_1\}\,C\,\{Q_1\}$}
+%%       \AxiomC{$Q_1 \to Q$}
+%       \UnaryInfC{$\{P\}\,C\,\{Q\}$}     
+%    \end{prooftree}
+%    if $P \to P_1$ and $Q_1 \to Q$ hold (these are called side-conditions of the rule). Note also that this rule implies that Hoare logic is not meant to be used by itself; it must always be accompanied by some device for establishing the validity of side conditions, such as a decision procedure based on satisfiability, or an inference system for first-order logic.
+%  \end{block}
+%\end{frame}
+%
+%
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{A simple example using the logical consequence rule}
+%  The small derivation below shows the applicability of the logical consequence rule, followed by the assignment rule. The logical consequence rule generates two side effects which can be trivially proved, and enables the application of the assignment rule.
+%    \begin{prooftree}
+%      \AxiomC{}
+%      \RightLabel{(assignment rule)}
+%      \UnaryInfC{$\{x + 1 > 10\}\;x := x + 1\;\{x > 10\}$}
+%      \RightLabel{if $x > 10 \to x + 1 > 10$ and $x > 10 \to x > 10$}
+%      \UnaryInfC{$\{x > 10\}\;x := x + 1\;\{x > 10\}$}
+%    \end{prooftree}
+%  \end{block}
+%\end{frame}
+%
+%\begin{slide}{How to deal with Hoare Logic proofs}
+%  \begin{block}{Two ways}
+%  \begin{itemize}
+%    \item directly encoding the inference system in the logic of the proof tool and reasoning simultaneously with rules of both Hoare logic and first-order logic as required: reasoning starts with the former but switches to the latter logic when side conditions are introduced by the consequence rule.
+%    \item The alternative approach consists in two steps:
+%      \begin{itemize}
+%        \item A \textbf{proof tree} is constructed for the desired specification, assuming that the side conditions generated by the consequence rule are valid
+%        \item An external proof tool is used (such as a theorem prover or a proof assistant) to actually establish the validity of the side conditions
+%        \item several proof trees can be created for the same specification (e.g., in the previous example we could weaken the precondition $x > 10$ to $x + 2 > 10$ instead of $x + 1 > 10$, meaning that we would obtain two different proof trees that would give the same conclusion.
+%      \end{itemize}
+%  \end{itemize}
+%  \end{block}
+%\end{slide}
+
+%\begin{slide}{On Verification Conditions Generation}
+%\begin{block}{From proof trees to algorithms}
+%  We have stated that a proof tree must be constructed to perform verification using Hoare Logic. When we close all the trees via the application of one of the rules that represents an axiom (e.g., skip rule or assignment rule), then we can state that a valid proof is obtained. Still, it is a manual process, which we would really like to avoid.
+%\end{block}
+%
+%\begin{block}{Verification Conditions Generation}
+%The process of constructing a proof tree can, fortunately, be replaced by an algorithm. This algorithm, called \textbf{Verification Conditions Generator}, or \textbf{VCGen} for short, applies a particular strategy for producing verification conditions that correspond to the side conditions of a particular derivation  
+%\end{block}
+
+%\end{slide}
+
+\begin{slide}{Verification Conditions Generation}
+
+\begin{block}{How do these VCGen work?}
+\begin{itemize}
+\item A VCGen algorithm takes as input a Hoare Triple $\{P\}\;C\;\{Q\}$ and returns a set of first-order logic proof obligations. 
+\item The proof obligations represent side conditions of the form $F_1 \to F_2$ 
+\end{itemize}
+\end{block}
+\end{slide}
+
+%\begin{slide}{Towards a new formulation}
+%\begin{block}{Desirable properties}
+%  \begin{itemize}
+%  \item \textit{subformula property:} the premises of a rule should not contain occurrences of assertions that do not appear in the rule's conclusion (otherwise we have to invent formulas).
+%  \item \textit{unambiguity:} a unique rule should be applicable in a backward fashion for the goal at hand, so that the construction of the proof tree is syntax-directed (and thus algorithmic). 
+%\end{itemize}
+%\end{block}
+%
+%\alert{We start by addressing the second desirable property, i.e., syntax-directed rules!}
+%\end{slide}
+%
+%\begin{slide}{Syntax directed Hoare logic}
+%\begin{block}{Undesired properties of original formulation}
+%  \begin{itemize}
+%  \item the \kw{skip} rule can only be applied if the precondition and post condition are the same;
+%  \item the \kw{assign} rule can only be applied if the precondition results from the postcondition by performing the corresponding substitution;
+%  \item the \kw{while} rule can only be applied if the precondition is an invariant of the loop, and the postcondition is the same invariant "strenghtened" with the negation of the loop condition. 
+%  \end{itemize}
+%\end{block}
+%
+%\begin{alertblock}{Important:}
+%the application of the above rules to goals with arbitrary preconditions and postconditions may very well require the application of the consequence rule! So this rule has to be embedded somehow in a new set of rules to be syntax-directed!!!  
+%\end{alertblock}
+%\end{slide}
+
+\begin{slide}{Algorithm for weakest precondition generation}
+  \begin{align*}
+  wprec(\kw{skip},Q) & ~=~ Q\\
+  wprec(x := E,Q)    & ~=~Q[x \mapsto E]\\
+  wprec(C_1;C_2,Q)   & ~=~ wprec(C_1,wprec(C_2,Q))\\
+  wprec(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ (B \to wprec(C_1,Q)) \land (\neg B \to wprec(C_2,Q))\\
+  wprec(\kw{while}\,B\,\kw{do}\,\{I\}\,C,Q) & ~=~ I
+\end{align*}
+\end{slide}
+
+
+
+\begin{slide}{Algorithm for generating Verification Conditions}
+ \begin{align*}
+ VC(\{P\}\,\kw{skip}\{Q\}) & ~=~ \{P \to Q\} \\\hline
+ VC(\{P\}\,x := E\,\{Q\})  & ~=~ \{P \to Q[x \mapsto E]\} \\\hline
+ VC(\{P\}\,C_1;C_2\,\{Q\}) & ~=~ \\
+ VC(\{P\}\,C_1\,\{wprec(C_2,Q)\}) & \cup VC(\{wprec(C_2,Q)\}\,C_2\,\{Q\})  \\\hline
+ VC(\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}) & ~=~ \\
+VC(\{P \land B\}\,C_1\{Q\}) &\cup VC(\{P \land \neg B\}\,C_2\,\{Q\}) \\\hline
+VC(\{P\}\,\kw{while}\,B\,\kw{do}\,\{I\}\,C\,\{Q\}) & ~=~\\
+ \{ P \to I , I \land \neg B \to Q\} &\cup VC(\{P \land \neg B\}\,C\,\{Q\}) 
+ \end{align*}
+\end{slide}
+
+\begin{slide}{Improved Verification Condition Generation}
+\begin{align*}
+VC(\kw{skip},Q) & ~=~ \emptyset\\
+VC(x := e,Q)    & ~=~ \emptyset\\
+VC(C_1;C_2,Q)   & ~=~ VC(C_1,wprec(C_2,Q)) \cup VC(C_2,Q)\\
+VC(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ VC(C_1,Q) \cup VC(C_2,Q)\\
+VC(\kw{while}\,B\,\kw{do}\,\{I\}\,C,Q) & ~=~ \{ (I \land B) \to wprec(C,I) \} \cup VC(C,I)\\
+& \:\:\:\:\:\:\:\:\:\{(I \land \neg B) \to Q\}\\
+& \\
+VCG(\{P\}\,C\,\{Q\}) & ~=~ \{P \to wprec(C,Q)\} \cup VC(C,Q)
+\end{align*}
+\end{slide}
+
+\begin{slide}{Lets do some exercises}
+Consider the following program: 
+\begin{align*}
+r := 1;\,
+i := 0;\,
+\kw{while}\,(i < m)\{r = n^i \land 0 \leq i < m \land n > 0\}\,\kw{do}\,\{
+r := r * n;\,
+i := i +1;
+\}
+\end{align*}
+
+Calculate the weakest precondition considering as post condition the following: $\{r = n^m\}$.
+
+Next, calculate the $VC$ assuming the precondition $n > 0 \land m \geq 0$  
+
+Finally, use the optimized algorithm for VC generation
+\end{slide}
+
+\begin{slide}{Running wprec}
+\begin{align*}
+  \textbf{wprec}(r := 1;i := 0;\,WHILE,\alert{r = n^m}) & = \\
+  \textbf{wprec}(r :=1 ,\textbf{wprec}(i := 0;WHILE,\alert{r = n^m})) & = \\
+  \textbf{wprec}(r :=1 ,\textbf{wprec}(i := 0,\textbf{wprec}(WHILE,\alert{r = n^m})))
+\end{align*}
+Looking now only at part of the while loop. The rule for the wprec in the case of loops is to return the associated invariant, hence we have that:
+\begin{align*}
+  \textbf{wprec}(\kw{while}\,(i < m)\{r = n^i \land 0 \leq i \leq m \land n > 0\}\,\kw{do}\,\{
+r := r * n;\,i := i +1;\}, \alert{r = n^m}) & = \\
+\{r = n^i \land 0 \leq i \leq m \land n > 0\}
+\end{align*}
+\end{slide}
+
+\begin{slide}{Running wprec}
+Continuing:
+\begin{align*}
+  \textbf{wprec}(r :=1 ,\textbf{wprec}(i := 0,\alert{r = n^i \land 0 \leq i \leq m \land n > 0})) & = \\
+  \textbf{wprec}(r :=1 ,\alert{r = n^i \land 0 \leq i \leq m \land n > 0}\,\color{blue}{[i \mapsto 0]}) & =\\
+  \textbf{wprec}(r :=1 , \alert{r = n^0 \land 0 \leq 0 < m \land n > 0}) & = \\
+  (\alert{r = n^0 \land 0 \leq 0 < m \land n > 0})\,\color{blue}{[r \mapsto 1]} & =\\
+  \alert{1 = n^0 \land 0 \leq 0 < m \land n > 0}
+\end{align*}
+Since we were considering $n > 0 \land m \geq 0$ as the precondition, it is straightforward to conclude that this precondition implies the weakest precondition generated.
+\end{slide}
+
+\begin{slide}{Running VC}
+We will now apply the VC algorithm to generate all proof obligations.\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1;i := 0;\,WHILE,\alert{\{r = n^m\}})$  \\
+  $=$\\
+  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1\,\alert{\{wprec(i := 0;\,WHILE,\{r = n^m\})\}})$ & (1)\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{\textbf{wprec}(i := 0;\,WHILE,\{r = n^m\})\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}})$ & (2)
+\end{tabular}}\\\vspace{0.5cm}
+Given the above expansion of the VC function, we should proceed by first reducing the weakest precondition generation, that is:\\\begin{center}
+\small{
+\begin{tabular}{cc}
+  $\textbf{wprec}(i := 0;\,WHILE,\{r = n^m\})$ & = \\
+  $\textbf{wprec}(i := 0,\textbf{wprec}(WHILE,r = n^m))$ & =\\
+  $\textbf{wprec}(i:=0,r = n^i \land 0 \leq i \leq m \land n > 0)$ & = \\
+  $(r = n^i \land 0 \leq i \leq m \land n > 0)[i \mapsto 0]$ & =\\
+  $r = n^0 \land 0 \leq 0 \leq m \land n > 0$
+\end{tabular}}
+\end{center}
+\end{slide}
+
+\begin{slide}{Running VC}
+So first, let us replace the $wprec$ calls in our previous slide:.\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1\,\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}})$ & (1)\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}})$ & (2)
+\end{tabular}}\\\vspace{0.5cm}  
+From (1) we can reach a final VC:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1\,\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}})$ & =\\
+  &\\
+  $\{(n > 0 \land m \geq 0) \to (r = n^0 \land 0 \leq 0 \leq m \land n > 0)[r \mapsto 1]\}$ & =\\
+  &\\
+  $\{(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\}$
+\end{tabular}}
+\end{slide}
+
+\begin{slide}{Running VC}
+We now have a verification condition already generated.\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\{(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\}$ & (1)\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}})$ & (2)
+\end{tabular}}\\\vspace{0.5cm}  
+We need to process (2), that is, the second call to \textbf{VC}:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{lc}
+  $\textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}}\,i := 0\,\alert{\{wprec(WHILE,r = n^m)\}})$ & (3)\\
+ $\cup$\\
+  $\textbf{VC}(\alert{\{\textbf{wprec}(WHILE,r = n^m)\}}\,WHILE\,\alert{\{r = n^m\}})$ & (4)
+\end{tabular}}\\\vspace{0.3cm}
+In the next slides we will address (3) and (4).
+\end{slide}
+
+
+\begin{slide}{Running VC}
+Starting with (3) we have:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 \leq m \land n > 0\}}\,i := 0\,\alert{\{\textbf{wprec}(WHILE,r = n^m)\}})$ & =\\
+  &\\
+  $\{(r = n^0 \land 0 \leq 0 \leq m \land n > 0) \to (\textbf{wprec}(WHILE,r = n^m))[i \mapsto 0]\}$ & =\\
+  &\\
+  $\{(r = n^0 \land 0 \leq 0 \leq m \land n > 0) \to (r = n^i \land 0 \leq i \leq m \land n > 0)[i \mapsto 0]\}$ & =\\
+  &\\
+  $\{(r = n^0 \land 0 \leq 0 \leq m \land n > 0) \to (r = n^0 \land 0 \leq 0 \leq m \land n > 0)\}$
+\end{tabular}}\\\vspace{0.3cm}
+We are now done with another VC. Next we proceed to solve (4):
+$$\textbf{VC}(\alert{\{\textbf{wprec}(WHILE,r = n^m)\}}\,WHILE\,\alert{\{r = n^m\}})$$
+\end{slide}
+
+\begin{slide}{Running VC}
+Now, picking up on (4) we have:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{\textbf{wprec}(WHILE,r = n^m)\}}\,WHILE\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\textbf{VC}(\alert{\{r = n^i \land 0 \leq i \leq m \land n > 0\}}\,WHILE\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\{(r = n^i \land 0 \leq i \leq m \land n > 0) \to (r = n^i \land 0 \leq i \leq m \land n > 0)\}$ \\
+  $\cup$ \\
+  $\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i \leq m)) \to (r = n^m)\}$\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)\}}\,r := r * n;\,i := i +1\,\alert{\{r = n^m\}})$ & (5)
+\end{tabular}}\\\vspace{0.3cm}
+We now have to process (5) since the other parts are already generated VCs.
+\end{slide}
+
+\begin{slide}{Running VC}
+Now, picking up on (5) we have:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VC}(\alert{\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m))\}}\,r := r * n;\,i := i +1\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\textbf{VC}(\alert{\{r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)\}}\,r := r * n\,\alert{\{\textbf{wprec}(i := i + 1,r = n^m)\}})$\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{\textbf{wprec}(i := i + 1,r = n^m)\}}\,i := i + 1\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\textbf{VC}(\alert{\{r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i \leq m)\}}\,r := r * n\,\alert{\{(r = n^m)[i \mapsto i + 1]\}})$\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{(r = n^m)[i \mapsto i + 1]\}}\,i := i + 1\,\alert{\{r = n^m\}})$
+\end{tabular}}\\\vspace{0.3cm}
+\end{slide}
+
+\begin{slide}{Running VC}
+Continuing with what is left:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\textbf{VC}(\alert{\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m))\}}\,r := r * n\,\alert{\{(r = n^m)\}})$\\
+  $\cup$\\
+  $\textbf{VC}(\alert{\{(r = n^m)\}}\,i := i + 1\,\alert{\{r = n^m\}})$ & =\\
+  &\\
+  $\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to (r = n^m)[r \to r*n]\}$\\
+  $\cup$\\
+  $\{(r = n^m) \to (r = n^m)[i \mapsto i + 1]\}$ & =\\
+  &\\
+  $\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to (r*n = n^m)\}$\\
+  $\cup$\\
+  $\{(r = n^m) \to (r = n^m)\}$
+\end{tabular}}\\\vspace{0.3cm}
+We now have processed all the VCs. 
+\end{slide}
+
+\begin{slide}{Running VC}
+Continuing with what is left:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{llc}
+  $\{$ & \\
+  & $(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\;,$\\
+  & $(r = n^0 \land 0 \leq 0 \leq m \land n > 0) \to (r = n^0 \land 0 \leq 0 \leq m \land n > 0)\;,$\\
+  & $(r = n^i \land 0 \leq i \leq m \land n > 0) \to (r = n^i \land 0 \leq i \leq m \land n > 0)\;,$ \\
+  & $(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to (r = n^m)\;,$\\
+  & $(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to (r*n = n^m)\;,$\\
+  & $(r = n^m) \to (r = n^m)$ & $\}$
+\end{tabular}}\\\vspace{0.3cm} 
+\end{slide}
+
+\begin{slide}{Final result}
+With this set of VCs the next step is to understand if they are all valid. One can see immediately that the ones in {\color{blue}{blue}} are trivially valid\\\vspace{0.5cm}
+\small{
+\begin{tabular}{llc}
+  $\{$ & \\
+  & {\color{blue}{$(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\;,$}}\\
+  & {\color{blue}{$(r = n^0 \land 0 \leq 0 \leq m \land n > 0) \to (r = n^0 \land 0 \leq 0 \leq m \land n > 0)\;,$}}\\
+  & {\color{blue}{$(r = n^i \land 0 \leq i \leq m \land n > 0) \to (r = n^i \land 0 \leq i \leq m \land n > 0)\;,$}} \\
+  & $(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i \leq m)) \to (r = n^m)\;,$\\
+  & $(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i \leq m)) \to (r*n = n^m)\;,$\\
+  & \color{blue}{$(r = n^m) \to (r = n^m)$} & $\}$
+\end{tabular}}\\\vspace{0.3cm} 
+\end{slide}
+
+\begin{slide}{Final result}
+For the remaining two VCs, we need to reason a bit. Let us first look into\\\vspace{0.3cm}
+\small{$$(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i \leq m)) \to (r = n^m)$$}
+which is the same as 
+\small{$$(r = n^i \land 0 \leq i \land i \leq m \land n > 0 \land i > m) \to (r = n^m)$$}
+But we have a contradiction of the hypoteses, here marked in {\color{red}{red}}:
+\small{$$(r = n^i \land 0 \leq i \land {\color{red}{i \leq m}} \land n > 0 \land {\color{red}{i > m}}) \to (r = n^m)$$}
+Hence, we can derive for this inconsistency that
+\small{$$\mathbf{false} \to r = n^m$$}
+Which trivially holds. The same reason is applicable to the remaining VC, which leads us to conclude that the set of VCs generated is valid and thus our program is correct wrt. the prescribed Hoare triple!!!
+\end{slide}
+
+%\begin{slide}{Using the improved VC algorithm}
+%  We will now apply the improved VC algorithm to generate all proof obligations.\\\vspace{0.5cm}
+%\small{
+%\begin{tabular}{cc}
+%  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1;i := 0;\,WHILE,\alert{\{r = n^m\}})$  \\
+%  $=$\\
+%  $\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1\,\alert{\{\textbf{wprec}(i := 0;\,WHILE,\{r = n^m\})\}})$ & (1)\\
+%  $\cup$\\
+%  $\textbf{VC}(\alert{\{\textbf{wprec}(i := 0;\,WHILE,\{r = n^m\})\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}})$ & (2)
+%\end{tabular}}\\\vspace{0.5cm}
+%\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+  We will now apply the VC algorithm to generate all proof obligations.\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+  $\textbf{VCG}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1;i := 0;\,WHILE,\alert{\{r = n^m\}})$  \\
+  $=$\\
+  $\{(n > 0 \land m \geq 0) \to \textbf{wprec}(r := 1;i := 0;\,WHILE,\alert{r = n^m})\}$ & (1)\\
+  $\cup$\\
+  $\textbf{VC}(r := 1;i := 0;\,WHILE,\alert{r = n^m})$ & (2)
+\end{tabular}}\\\vspace{0.5cm}
+As done before, lets proceed with (1) first and then continue with (2).
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+  The case of (1) amounts at processing the wprec function.\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\{(n > 0 \land m \geq 0) \to \textbf{wprec}(r := 1;i := 0;\,WHILE,\alert{r = n^m})\}$ & =\\
+ $\{(n > 0 \land m \geq 0) \to \textbf{wprec}(r := 1,\textbf{wprec}(i := 0,\textbf{wprec}(WHILE,\alert{r = n^m})))\}$ & =\\
+ $\{(n > 0 \land m \geq 0) \to \textbf{wprec}(r := 1,\textbf{wprec}(i := 0,\alert{r = n^i \land 0 \leq i \leq m \land n > 0}))\}$ & = \\
+ $\{(n > 0 \land m \geq 0) \to \textbf{wprec}(r := 1,\alert{(r = n^i \land 0 \leq i \leq m \land n > 0})[i \mapsto 0])\}$ & = \\
+ $\{(n > 0 \land m \geq 0) \to ((r = n^i \land 0 \leq i \leq m \land n > 0)[i \mapsto 0,r \mapsto 1]\}$ & = \\
+ $\{(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\}$
+ \end{tabular}}\\\vspace{0.3cm}
+Now we continue with (2) since we have finished obtaining a VC from (1).
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+  Now, let us continue with the expansion of (2):\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\textbf{VC}(r := 1;i := 0;\,WHILE,\alert{r = n^m})$ & =\\ \\
+ $\textbf{VC}(r := 1,\alert{\textbf{wprec}(i := 0;\,WHILE,r = n^m)})$ \\
+ $\cup$\\
+ $\textbf{VC}(i := 0;\,WHILE,\alert{r = n^m})$ & =\\ \\
+ $\emptyset$  $\cup$ $\textbf{VC}(i := 0;\,WHILE,\alert{r = n^m})$ & =\\
+ \\
+ $\textbf{VC}(i := 0,\alert{\textbf{wprec}(WHILE,r = n^m)})$ & (3)\\
+ $\cup$\\ 
+ $\textbf{VC}(WHILE,\alert{r = n^m})$ & (4)
+\end{tabular}}\\\vspace{0.3cm}
+Now we continue with (3) and (4).
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+Picking up first on (3), we have:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\textbf{VC}(r := 1,\alert{\textbf{wprec}(i := 0;\,WHILE,r = n^m)})$ & =\\
+ $\emptyset$
+\end{tabular}}\\\vspace{0.3cm}
+Next, we have to deal with (4):\\\vspace{0.3cm}
+\small{
+\begin{tabular}{cc}
+ $\textbf{VC}(WHILE,\alert{r = n^m})$ \\ =\\
+ $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \textbf{wprec}(r := r*n;i := i + 1, \alert{r = n^i \land 0 \leq i \leq m \land n > 0})\}$ \\
+ $\cup$\\
+ $\textbf{VC}(r := r*n;i := i + 1,\alert{r = n^i \land 0 \leq i \leq m \land n > 0})$\:(5)\\
+ $\cup$\\
+ $\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to r = n^m\}$
+\end{tabular}}\\\vspace{0.3cm}
+Now let us expand (5)
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+Expanding (5), we have:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\textbf{VC}(r := r*n;i := i + 1,\alert{r = n^i \land 0 \leq i \leq m \land n > 0})$ & =\\
+ &\\
+ $\textbf{VC}(r := r*n,\textbf{wprec}(i := i + 1,\alert{r = n^i \land 0 \leq i \leq m \land n > 0}))$\\
+ $\cup$\\
+ $\textbf{VC}(i := i + 1,\alert{r = n^i \land 0 \leq i \leq m \land n > 0})$ & =\\
+ &\\
+ $\emptyset \cup \emptyset = \emptyset$\\
+\end{tabular}}\\\vspace{0.2cm}
+We are done with (5). Now we have to finish the VC still containing call to wprec:\\\vspace{0.2cm}
+$$\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \textbf{wprec}(r := r*n;i := i + 1, \alert{r = n^i \land 0 \leq i \leq m \land n > 0})\}$$
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+Let us continue with what is missing:\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+ $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \textbf{wprec}(r := r*n;i := i + 1, \alert{r = n^i \land 0 \leq i \leq m \land n > 0})\}$ \\
+ \\
+ = (applying twice the definition of \textbf{wprec})\\
+ \\
+ $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \alert{(r = n^i \land 0 \leq i \leq m \land n > 0})[i \mapsto i + 1][r \mapsto r*n]\}$ \\
+ =\\
+ $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \alert{(r = n^{i+1} \land 0 \leq i \leq m \land n > 0})[r \mapsto r*n]\}$\\
+ =\\
+ $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \alert{(r*n = n^{i+1} \land 0 \leq i \leq m \land n > 0})\}$
+\end{tabular}}\\\vspace{0.3cm}
+\end{slide}
+
+\begin{slide}{Using the improved VC algorithm}
+Now we can join all VCs together and check if this set is valid (and thus the code is correct wrt to the given specification/Hoare triple):\\\vspace{0.5cm}
+\small{
+\begin{tabular}{cc}
+$\textbf{VC}(\alert{\{n > 0 \land m \geq 0\}}\,r := 1;i := 0;\,WHILE,\alert{\{r = n^m\}})$  & =\\
+\\
+   $\{(n > 0 \land m \geq 0) \to (1 = n^0 \land 0 \leq 0 \leq m \land n > 0)\}$ & (1)\\
+   $\cup$ \\
+   $\{(r = n^i \land 0 \leq i \leq m \land n > 0 \land \neg(i < m)) \to r = n^m\}$ & (2)\\
+   $\cup$ \\
+   $\{r = n^i \land 0 \leq i \leq m \land n > 0 \land i < m \to \alert{(r*n = n^{i+1} \land 0 \leq i \leq m \land n > 0})\}$ & (2)
+\end{tabular}}\\\vspace{0.3cm}
+\end{slide}
+
+\begin{slide}{Final result of using the improved VC algorithm}
+The first thing to notice is that indeed the improved version of VC generates less verification conditions. Regarding their validity:
+\begin{itemize}
+\item (1) is trivially true, since $1 = n^0$ and the remaining parts of the conjunction are part of the hypotheses;
+\item the first formula marked as (2) is also trivially correct due to the contradiction on the hypothesis, that is, $\neg(i < m)$ amounts at $i \geq m$ but $i \leq m$ in the hypothesis as well.
+\item for the second formula marked as (2), we can easily show that $r * n = n^{i+1} \leftrightarrow r * n = n^i * n$ and thus we can conclude from this that $r = n^i$, which is part of the assumptions, hence it is trivially true.  
+\end{itemize}
+\end{slide}
+
+%\begin{slide}{Running VC}
+%  We continue with (1):
+%  \begin{align*}
+%    n > 0 \land m \geq 0 \to \textbf{wprec}(i := 0,\textbf{wprec}(WHILE,\{r = n^m\}))[r \mapsto 1] & =\\
+%    n > 0 \land m \geq 0 \to \textbf{wprec}(i := 0,\alert{r = n^i \land 0 \leq i < m \land n > 0})[r \mapsto 1] & =\\
+%    n > 0 \land m \geq 0 \to (r = n^i \land 0 \leq i < m \land n > 0)[r \mapsto 1][i \mapsto 0] & =\\
+%    n > 0 \land m \geq 0 \to (1 = n^0 \land 0 \leq 0 < m \land n > 0)
+%  \end{align*}
+%This corresponds to the first proof obligation / verification condition generated. Now we proceed with (2)
+%\end{slide}
+%
+%\begin{slide}{Running VC}
+%  We continue with (2):
+%  \begin{align*}
+%    \textbf{VC}(\alert{\{\textbf{wprec}(i := 0;\,WHILE,\{r = n^m\})\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}}) & =\\
+%    \textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 < m \land n > 0\}}\,i := 0;\,WHILE\,\alert{\{r = n^m\}}) & = \\
+%    \textbf{VC}(\alert{\{r = n^0 \land 0 \leq 0 < m \land n > 0\}}\,i := 0\,\alert{}
+%  \end{align*}
+%
+%\end{slide}
+
+
+%
+%\section*{From the Proof Rules into the Weakest Precondition \& VC algorithms}
+%
+%
+%\begin{frame}[fragile]{From Program-Proof Rules to algorithms}
+%\begin{block}{Proof rule for \kw{skip}}
+%The \kw{skip} command does not change the state of the program. Hence, the precondition must imply the postcondition.
+%  \begin{prooftree}
+%       \AxiomC{$$}
+%       \RightLabel{if $P \to Q$}
+%       \UnaryInfC{$\{P\}\;\kw{skip}\;\{Q\}$}
+%  \end{prooftree} 
+%  \end{block}
+%  \begin{block}{WPrec and VC rules}
+%  From the algorithmic point of view we have:
+%  \begin{align*}
+%  wprec(\kw{skip},Q) & ~=~ Q \\
+%  VC(\{P\}\,\kw{skip}\{Q\}) & ~=~ \{P \to Q\}
+% \end{align*}
+%\end{block}
+%
+%\end{frame}
+%
+%\begin{frame}[fragile]{From Program-Proof Rules to algorithms}
+%  \begin{block}{The case of the assignment command}
+%  The assignment rule states a change in a value assigned to a variable. Hence, the precondition $P$ must imply that substitution.
+%    \begin{prooftree}
+%      \AxiomC{$$}
+%      \RightLabel{if $P \to Q[x \mapsto E]$}
+%      \UnaryInfC{$\{P\}\;x:=\,E\;\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%  \begin{block}{WPrec and VC rules}
+%  From the algorithmic point of view we have:
+%  \begin{align*}
+%  wprec(x := E,Q)    & ~=~Q[x \mapsto E]\\
+%  VC(\{P\}\,x := E\,\{Q\})  & ~=~ \{P \to Q[x \mapsto E]\}
+% \end{align*}
+% \end{block}
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case fo while loops}
+%  For sequences of commands, the goal is to find the intermediate condition $R$ between the two commands. 
+%    \begin{prooftree}
+%       \AxiomC{$\{P\} C_1 \{R\}$}
+%      \AxiomC{$\{R\} C_2 \{Q\}$}
+%      \BinaryInfC{$\{P\} C_1\textbf{;}\,C_2 \{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%  \begin{block}{WPrec and VC rules}
+%  From the algorithmic point of view we have:
+%  \begin{align*}
+%  wprec(C_1;C_2,Q)   & ~=~ wprec(C_1,wprec(C_2,Q))\\
+%  VC(\{P\}\,C_1;C_2\,\{Q\}) & ~=~ 
+% VC(\{P\}\,C_1\,\{wprec(C_2,Q)\}) \cup VC(\{wprec(C_2,Q)\}\,C_2\,\{Q\})
+% \end{align*}
+% \end{block}
+%\end{frame}
+%
+%\begin{frame}[fragile]{The Program-Proof System Rules}
+%  \begin{block}{The case of conditionals}
+%  In the case of conditionals, one must prove that independently of the value of the Boolean $B$ that serves as a guarda for the conditional, the postcondition holds. 
+%    \begin{prooftree}
+%      \AxiomC{$\{B \land P\}\,C_1\,\{Q\}$}
+%      \AxiomC{$\{\neg B \land P\}\,C_2\,\{Q\}$}
+%      \BinaryInfC{$\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%\begin{block}{WPrec and VC rules}
+%  From the algorithmic point of view we have:
+%  \begin{align*}
+%  wprec(\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2,Q) & ~=~ (B \to wprec(C_1,Q)) \land (\neg B \to wprec(C_2,Q))\\
+%  VC(\{P\}\,\kw{if}\,B\,\kw{then}\,C_1\,\kw{else}\,C_2\,\{Q\}) & ~=~ 
+%VC(\{P \land B\}\,C_1\{Q\}) \cup VC(\{P \land \neg B\}\,C_2\,\{Q\})
+% \end{align*}
+% \end{block}
+%\end{frame}
+%
+%\begin{frame}[fragile]{Extending the annotation to while loops}
+%  \begin{block}{The case fo while loops}
+%  The new rule for while loops now considers the invariant as an annotation:
+%    \begin{prooftree}
+%      \AxiomC{$\{B \land I\}\,C\,\{I\}$}
+%      \RightLabel{if $P \to I$ and $I \land \neg B \to Q$}
+%      \UnaryInfC{$\{P\}\,\kw{while}\;B\;\kw{do}\;\{I\}\;C\;\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%  \begin{block}{WPrec and VC rules}
+%  From the algorithmic point of view we have:
+%  \begin{align*}
+%  wprec(\kw{while}\,B\,\kw{do}\,\{I\}\,C,Q) & ~=~ I\\
+%  VC(\{P\}\,\kw{while}\,B\,\kw{do}\,\{I\}\,C\,\{Q\}) & ~=~
+% \{ P \to I , I \land \neg B \to Q\} \cup VC(\{P \land \neg B\}\,C\,\{Q\})
+% \end{align*}
+% \end{block}
+%\end{frame}
+
+
+%\begin{slide}{Almost there to define a VCGen}
+%  \begin{block}{Goal directed but no sub-formula property}
+%    We can definitely state that the new rules provide Hoare logic with a syntax-directed approach: it consists of \textbf{exactly one rule for each program construct}, and moreover, for a given specification $\{P\}\;C\;\{Q\}$, the rule matching the program $C$ can always be applied (granted that side conditions are met!), since the precondition and postcondition are now arbitrary.
+%  \end{block}
+%  
+%  \begin{alertblock}{No sub-formula property}
+%    \begin{itemize}
+%    \item the while rule lost the property since the invariant assertion no longer occurs in the conclusion
+%    \item the rule for the sequence construct does not enjoy the property either, since the intermediate assertion R does not occur in the conclusion  
+%    \end{itemize}
+%  \end{alertblock}
+%\end{slide}
+
+%\section*{Improving the VCGen}
+
+
+
+
+%\section*{Program Annotations}
+%
+%
+%\begin{slide}{The role of program annotations}
+%\begin{block}{Restoring the subformula property}  
+%  One way to restore the subformula property in our current system for Hoare logic is precisely to introduce \textbf{human-provided annotations} in the programs. An annotated program is a \textbf{program with assertions embedded within it}.  
+%\end{block}
+%\begin{block}{Extending the language of commands}
+%\begin{align*}
+%  C &~::=~ \kw {skip} ~~|~~ C;\{\alert{A}\}\,C ~~|~~ x:=E
+% ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\{\alert{A}\}\,C
+%\end{align*}  
+%\end{block}
+%\end{slide}
+%
+%\begin{slide}{Some examples}
+%\begin{block}{Example 1}
+%For instance, the command $$\kw{while}\,B\,\kw{do}\,\{I\}\,C$$ denotes a loop with condition $B$ and user-provided invariant $I$.  
+%\end{block}
+%\begin{block}{Example 2}
+%For instance, the command $C_1;\,\{A\}\,C_2$ has the same meaning ot $C;C$ but the assertion $A$ must be true when the execution of $C_1$ terminates.
+%\end{block}
+%\end{slide}
+%
+%
+%\begin{frame}[fragile]{Updating the sequence rule}
+%  \begin{block}{The new case of command sequence}
+%  When in the presence of a sequence of commands, we must prove that if the first command $C_1$ terminates in a postcondition $R$ then, the second command $C_2$, satisfying $R$ at start, if terminates, must do so in the prescribed postcondition $Q$.
+%    \begin{prooftree}
+%      \AxiomC{$\{P\} C_1 \{\alert{R}\}$}
+%      \AxiomC{$\{\alert{R}\} C_2 \{Q\}$}
+%      \BinaryInfC{$\{P\} C_1\,\{\alert{R}\}\textbf{;}\,C_2 \{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%\end{frame}
+
+%\begin{slide}{Example of annotated Fibonnaci program}
+%\begin{center}
+%\includegraphics[scale=0.3]{images/fib}
+%\end{center}
+%\end{slide}
+%
+%\begin{frame}[fragile]{Extending the annotation to while loops}
+%  \begin{block}{The case fo while loops}
+%  The new rule for while loops now considers the invariant as an annotation:
+%    \begin{prooftree}
+%      \AxiomC{$\{B \land I\}\,C\,\{I\}$}
+%      \RightLabel{if $P \to I$ and $I \land \neg B \to Q$}
+%      \UnaryInfC{$\{P\}\,\kw{while}\;B\;\kw{do}\;\{I\}\;C\;\{Q\}$}
+%    \end{prooftree}
+%  \end{block}
+%\end{frame}
+
+%\begin{slide}{Propagation of annotations in code}
+% Consider the following code:
+%\begin{center}
+%\includegraphics[scale=0.5]{images/ex_code}  
+%\end{center}
+%Let us run the first $wprec$ function on this. The actual call to the function will be
+%$$wprec(aux := y; y := x; x := x + aux, \{x > 10 \land y == 5\})$$ 
+%\end{slide}
+%
+%\begin{slide}{Running example - usage of wprec}
+%\begin{align*}
+%  \textbf{wprec}(aux := y; y := x; x := x + aux, \{x > 10 \land y == 5\}) & ~=~ \\
+%  \textbf{wprec}(aux := y,\textbf{wprec}(y := x; x := x + aux, \{x > 10 \land y == 5\})) & ~=~ \\
+%  \textbf{wprec}(aux := y,\textbf{wprec}(y := x,\textbf{wprec}(x := x + aux, \{x > 10 \land y == 5\}))) & ~=~ \\
+%  \textbf{wprec}(aux := y,\textbf{wprec}(y := x,\{x > 10 \land y == 5\}[x \mapsto x + aux])) & ~=~ \\
+%  \textbf{wprec}(aux := y,\textbf{wprec}(y := x,\{x + aux > 10 \land y == 5\})) & ~=~ \\
+%  \textbf{wprec}(aux := y,\{x + aux > 10 \land y == 5\}[y \mapsto x]) & ~=~ \\
+%  \textbf{wprec}(aux := y,\{x + aux > 10 \land x == 5\}) & ~=~ \\
+%  \{x + aux > 10 \land x == 5\}[aux \mapsto y] & ~=~ \\
+%  \{x + y > 10 \land x == 5\}
+%\end{align*}
+%\end{slide}
+%
+%\begin{slide}{Running example - usage of VC}
+%\begin{align*}
+%  \textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,aux := y; y := x; x := x + aux, \alert{\{x > 10 \land y == 5\}}) = \\ \\
+%  (1)\,\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,aux := y\,\alert{\{\textbf{wprec}(y := x; x := x + aux, \{x > 10 \land y == 5\})\}})\\
+%  \cup \\
+%  (2)\,\textbf{VC}(\alert{\{\textbf{wprec}(y := x; x := x + aux, \{x > 10 \land y == 5\})\}}\,\\y := x; x := x + aux\,\alert{\{x > 10 \land y == 5\}}) =
+%\end{align*}  
+%\end{slide}
+%
+%\begin{slide}{Running example - usage of VC (1)}
+%\footnotesize{
+%\begin{align*}
+%(1)\,\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,
+% aux := y\,
+%\alert{\{\textbf{wprec}(y := x; x := x + aux, \{x > 10 \land y = 5\})\}})  \\ = \\
+%\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,
+% aux := y\,
+%\alert{\{\textbf{wprec}(y := x,\textbf{wprec}(x := x + aux, \{x > 10 \land y = 5\}))\}}) \\ = \\
+%\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,
+% aux := y\,
+% \alert{\{\textbf{wprec}(y := x,\{x > 10 \land y = 5\}[x \mapsto x + aux])\}}) \\ = \\
+%\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,
+%aux := y\,
+%\alert{\{x > 10 \land y = 5\}[x \mapsto x + aux][y \mapsto x])\}}) \\ = \\
+%\textbf{VC}(\alert{\{x = 5 \land y = 10\}}\,
+%aux := y\,
+%\alert{\{x + aux > 10 \land x = 5\}}) \\ = \\
+%\{(x = 5 \land y = 10) \to (x + aux > 10 \land x = 5)[aux \to y]\} \\ = \\
+%\{(x = 5 \land y = 10) \to (x + y > 10 \land x = 5)\}
+%\end{align*} 
+%}
+%\end{slide}
+%
+%\begin{slide}{Running example - usage of VC (2)}
+%\footnotesize{
+%\begin{align*}
+%(2)\,\textbf{VC}(\alert{\{\textbf{wprec}(y := x; x := x + aux, \{x > 10 \land y = 5\})\}}\,y := x; x := x + aux\,\alert{\{x > 10 \land y = 5\}}) \\ = \\
+%\textbf{VC}(\alert{\{\textbf{wprec}(y := x,\textbf{wprec}(x := x + aux, \{x > 10 \land y = 5\}))\}}\,y := x; x := x + aux\,\alert{\{x > 10 \land y = 5\}}) \\ = \\
+%\textbf{VC}(\alert{\{\textbf{wprec}(y := x,\{x > 10 \land y == 5\})[x \mapsto x + aux]\}}\,y := x; x := x + aux\,\alert{\{x > 10 \land y = 5\}}) \\ = \\
+%\textbf{VC}(\alert{\{x > 10 \land y = 5\}[x \mapsto x + aux][y \mapsto x]}\,y := x; x := x + aux\,\alert{\{x > 10 \land y == 5\}}) \\ = \\
+%\textbf{VC}(\alert{\{x + aux > 10 \land y = 5\}[y \mapsto x]}\,y := x; x := x + aux\,\alert{\{x > 10 \land y = 5\}}) \\ = \\
+%\textbf{VC}(\alert{\{x + aux > 10 \land x = 5\}}\,y := x; x := x + aux\,\alert{\{x > 10 \land y = 5\}}) \\ = 
+%\end{align*}  
+%}
+%\end{slide}
+%
+%
+%\begin{slide}{Running example - usage of VC (2)}
+%\scriptsize{
+%\begin{align*}
+%\textbf{VC}(\alert{\{x + aux > 10 \land x = 5\}}\,
+%y := x\,
+%\alert{\{\textbf{wprec}(x := x + aux,\{x > 10 \land y = 5\})\}})\,\\ \cup \\
+%\textbf{VC}(\alert{\{\textbf{wprec}(x := x + aux,\{x > 10 \land y = 5\})\}}\,
+%x := x + aux\,
+%\alert{\{x > 10 \land y = 5\}}) & = \\ \\
+%\textbf{VC}(\alert{\{x + aux > 10 \land x = 5\}}\,y := x\alert{\{x > 10 \land y = 5\}[x \to x + aux])\}})\,\\\cup \\
+%\textbf{VC}(\alert{\{x > 10 \land y = 5\}[x \to x + aux])\}}\,x := x + aux\,\alert{\{x > 10 \land y = 5\}}) & = \\ \\
+%\textbf{VC}(\alert{\{x + aux > 10 \land x = 5\}}\,y := x\,\alert{\{x + aux > 10 \land y = 5\}})\,\\\cup \\
+%\textbf{VC}(\alert{\{x + aux > 10 \land y = 5\}}\,x := x + aux\,\alert{\{x > 10 \land y = 5\}}) & =
+%\end{align*}
+%}  
+%\end{slide}
+%
+%\begin{slide}{Running example - usage of VC (2)}
+%\footnotesize{
+%\begin{align*}
+%\{x + aux > 10 \land y = 5 \to (x + aux > 10 \land y = 5)[y \mapsto x]\} \\ \cup \\
+%\{x + aux > 10 \land y = 5 \to (x > 10 \land y = 5)[x \mapsto x + aux]\} & = \\ \\
+%\{x + aux > 10 \land y = 5 \to (x + aux > 10 \land x = 5)\} \\ \cup \\
+%\{x + aux > 10 \land y = 5 \to (x + aux > 10 \land y = 5)\} & =
+%\end{align*}  
+%}
+%\end{slide}
+%
+%\begin{slide}{Results from propagation}
+%\begin{center}
+%\includegraphics[scale=0.5]{images/ex_code_prop}  
+%\end{center}
+%  
+%\end{slide}
+%
+%\section*{Weakest Preconditions}
+%
+%\begin{slide}{Weakest Preconditions}
+%  \begin{block}{A new look at back propagation of annotations}
+%  \begin{itemize}
+%  \item we have seen that back propagating annotations from postconditions works
+%  \item it can be realised as an algorithm
+%  \item such algorithm generates the so-called \textbf{weakest preconditions} of an annotated code starting from its postcondition, that is, the weakes conditions that ensure that a program $C$ satisfies the postcondition $Q$ if it terminates, that is $$\{\mathrm{wprec}(C,Q)\}\,C\,\{Q\}$$
+%  \item if we are able to prove that a precondition $p \to \mathrm{wprec}(C,Q)$ holds, then we can use this weakest precondition generation algorithm to help building the proof tree!
+%  \end{itemize}
+%  \end{block}
+%\end{slide}
+
+
+
+
+
+
+
+
+%\begin{slide}{While$^{Int}$ with assertions -- Syntax}
+%\small
+%\begin{align*}
+%  x &~\in~ \text{Identifiers}
+%  \\
+%  n &~\in~ \text{Numerals}
+%  \\
+%  B &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ B \land B ~~|~~ B \lor B ~~|~~ \lnot B ~~|~~ E<E ~~|~~ E=E
+%  \tag{boolean-expr}\\
+%  E &~::=~ n ~~|~~ x ~~|~~ E+E ~~|~~ E*E ~~|~~ E-E
+%  \tag{int-expr}\\
+%  C &~::=~ \kw {skip} ~~|~~ C;C ~~|~~ I:=E
+%    ~~|~~  \kw{if } B \kw{ then } C\kw{ else }C ~~|~~  \kw{while }B\kw{ do }\alert{\{\phi\}}C
+%  \tag{command}\\
+%  \alert{\phi} &~::=~ \kw{true} ~~|~~ \kw{false} ~~|~~ x ~~|~~ \phi \land \phi ~~|~~ \phi \lor \phi ~~|~~ \lnot \phi
+%    ~~|~~ \alert{\forall x.\phi} ~~|~~ \alert{\exists x.\phi}
+%\end{align*}
+%
+%Assume operators to be left associative.
+%\\Use `\{' and `\}' to clarify precedence when necessary.
+%
+%\end{slide}
+
+
+
+\end{document}
