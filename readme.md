@@ -63,6 +63,7 @@ This course teaches the basic principles of Model-Driven Engineering - MDE. Stud
  -->
 
  <li><a href="assignments/tp1.pdf">TP1: Specification and Verification in Uppaal (group)</a></li>
+ <li><a href="assignments/tp2.pdf">TP2: Exercises about Hoare Logic and Verification Conditions Generation (not subject to evaluation)</a></li>
 </ul>
 
 
