@@ -39,7 +39,7 @@
 }
 
 \descrbox{Require Software}{
-In terms of required software, you need to have any version of Python 3.10 installed in your system (or accessible via the IDE or code editor of your choice. Also, the colorama package is required for pretty printing only. In case you have difficulties installing any of the mentioned software, please contact \bash{drp@isep.ipp.pt} at your earliest convenience.}
+In terms of required software, you need to have any version of Python 3.10 installed in your system (or accessible via the IDE or code editor of your choice). Also, the colorama package is required for pretty printing only. In case you have difficulties installing any of the mentioned software, please contact \bash{drp@isep.ipp.pt} at your earliest convenience.}
 
 %\descrbox{How to submit using git}{
 %  \begin{enumerate}[itemsep=1pt,leftmargin=20pt]
@@ -103,20 +103,20 @@ In terms of required software, you need to have any version of Python 3.10 insta
 
 \section{Objectives}
 
-As announced in the classes, the objective for each group to complete the implementation of two functions that are incomplete in the Python code distribution available in \url{https://github.com/cister-labs/hoare_project}, and that serves as code base for this project. The functions are:\\
+As announced in the classes, the objective for each group is to complete the implementation of two functions that are incomplete in the distributed  Python code available at \url{https://github.com/cister-labs/hoare_project}, and that serves as code base for this project. These incomplete functions are:\\
 
 \begin{enumerate}
-  \item \textbf{wprec:} the function that implements the generation of \textit{weakest preconditions}. Its code is available in the file \texttt{WPrec.py}
-  \item \textbf{VC:} the function that implements the generation of verification conditions. Its code is available in the file \texttt{VCs.py}
+  \item \textbf{wprec:} the function that implements the generation of \textit{weakest preconditions}. Its code is available in the file \bash{WPrec.py}.
+  \item \textbf{VC:} the function that implements the generation of verification conditions. Its code is available in the file \bash{VCs.py}.
 \end{enumerate}
 
-To implement these functions, you should follow their algorithmic definitions as presented in the slides used during the classes and also read and understand how the improved verification generation function has been implemented (the function is named \textbf{VC\_i} and can be found on file \texttt{VCs.py}. 
+To implement these functions, you should follow their algorithmic definitions as presented in the slides used during the classes and also read and understand how the improved verification generation function has been implemented (the function is named \textbf{VC\_i} and can be found on file \bash{VCs.py}). 
 
 The specifications of the two functions for the groups to complete are presented later on on this document. But, before that, we will provide an high-level description of the parts of the code base to ease its understanding.
 
 \subsection{Class Hierarchy for Arithmetic and Boolean Expressions, Specifications, and Commands}
 
-The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \texttt{Exprs.py}. The diagram presented in Figure \ref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
+The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \bash{Exprs.py}. The diagram presented in Figure \ref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
 
 \begin{figure}
 \begin{center}
