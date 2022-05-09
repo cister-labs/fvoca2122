@@ -116,7 +116,7 @@ The specifications of the two functions for the groups to complete are presented
 
 \subsection{Class Hierarchy for Arithmetic and Boolean Expressions, Specifications, and Commands}
 
-The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \bash{Exprs.py}. The diagram presented in Figure \ref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
+The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \bash{Exprs.py}. The diagram presented in \cref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
 
 \begin{figure}
 \begin{center}
@@ -201,7 +201,7 @@ class AEMult(AExpr):
 The code is quite compact and simple. It consists of a constructor \lstinline!__init__! that takes arguments \lstinline!l! and \lstinline!r! that refer to the left and right subexpression (that must be a particular subclass of the \lstinline!Expr! class). Both subexpressions can be accessed via the methods named \lstinline!left! and \lstinline!right!, respectively. The other methods, namely \lstinline!__eq__! and \lstinline!__str__! are responsible for comparing and pretty-printing the contents of the class, respectively.
 
 
-The same type of hierarchy was implemented for Boolean expressions. In the case of specifications, those reflect the same structure of Boolean expressions, and the code is available in the file \bash{Specs.py}. Similarly, the class hierarchy for the command's language is implemented in the file \bash{Imp.py}. The class diagrams for each of these class hierarchies is presented, for your convenience, in the end of this document.
+The same type of hierarchy was implemented for Boolean expressions (\cref{bexprs}). In the case of specifications, those reflect the same structure of Boolean expressions, and the code is available in the file \bash{Specs.py}. Similarly, the class hierarchy for the command's language is implemented in the file \bash{Imp.py}. The class diagrams for each of these class hierarchies is presented, for your convenience, in the end of this document.
 
 \subsection{The VC\_i function: reference function for completing the assignment}
 
@@ -337,9 +337,10 @@ The class diagram for Boolean expressions is captured by the class hierarchy pre
   \end{class}
 \end{tikzpicture}
 \caption{Boolean Expressions class hierarchy.}
+\label{bexprs}
 \end{figure}
 
-The class diagram presented in Figure \ref{specs} captures the syntax of specifications. Specifications are very similar to Boolean expressions but they also consider universal and existential quantifiers. In file \bash{Spec.py} you can find the code that translates a Boolean expression onto a logically equivalent specification; that function is named \bash{bexp2spec}.
+The class diagram presented in \cref{specs} captures the syntax of specifications. Specifications are very similar to Boolean expressions but they also consider universal and existential quantifiers. In file \bash{Spec.py} you can find the code that translates a Boolean expression onto a logically equivalent specification; that function is named \bash{bexp2spec}.
 
 \begin{figure}
 \begin{center}
