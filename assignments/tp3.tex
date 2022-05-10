@@ -39,7 +39,7 @@
 }
 
 \descrbox{Require Software}{
-In terms of required software, you need to have any version of Python 3.10 installed in your system (or accessible via the IDE or code editor of your choice. Also, the colorama package is required for pretty printing only. In case you have difficulties installing any of the mentioned software, please contact \bash{drp@isep.ipp.pt} at your earliest convenience.}
+In terms of required software, you need to have any version of Python 3.10 installed in your system (or accessible via the IDE or code editor of your choice). Also, the colorama package is required for pretty printing only. In case you have difficulties installing any of the mentioned software, please contact \bash{drp@isep.ipp.pt} at your earliest convenience.}
 
 %\descrbox{How to submit using git}{
 %  \begin{enumerate}[itemsep=1pt,leftmargin=20pt]
@@ -103,20 +103,20 @@ In terms of required software, you need to have any version of Python 3.10 insta
 
 \section{Objectives}
 
-As announced in the classes, the objective for each group to complete the implementation of two functions that are incomplete in the Python code distribution available in \url{https://github.com/cister-labs/hoare_project}, and that serves as code base for this project. The functions are:\\
+As announced in the classes, the objective for each group is to complete the implementation of two functions that are incomplete in the distributed  Python code available at \url{https://github.com/cister-labs/hoare_project}, and that serves as code base for this project. These incomplete functions are:\\
 
 \begin{enumerate}
-  \item \textbf{wprec:} the function that implements the generation of \textit{weakest preconditions}. Its code is available in the file \texttt{WPrec.py}
-  \item \textbf{VC:} the function that implements the generation of verification conditions. Its code is available in the file \texttt{VCs.py}
+  \item \textbf{wprec:} the function that implements the generation of \textit{weakest preconditions}. Its code is available in the file \bash{WPrec.py}.
+  \item \textbf{VC:} the function that implements the generation of verification conditions. Its code is available in the file \bash{VCs.py}.
 \end{enumerate}
 
-To implement these functions, you should follow their algorithmic definitions as presented in the slides used during the classes and also read and understand how the improved verification generation function has been implemented (the function is named \textbf{VC\_i} and can be found on file \texttt{VCs.py}. 
+To implement these functions, you should follow their algorithmic definitions as presented in the slides used during the classes and also read and understand how the improved verification generation function has been implemented (the function is named \textbf{VC\_i} and can be found on file \bash{VCs.py}). 
 
 The specifications of the two functions for the groups to complete are presented later on on this document. But, before that, we will provide an high-level description of the parts of the code base to ease its understanding.
 
 \subsection{Class Hierarchy for Arithmetic and Boolean Expressions, Specifications, and Commands}
 
-The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \texttt{Exprs.py}. The diagram presented in Figure \ref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
+The implementation that is going to be used considers the simple imperative language introduced in the classes. As we have seen before, the syntax of that language, to which we call IMP, is implemented via a class hierarchy defined in the file \bash{Exprs.py}. The diagram presented in \cref{aexprs} shows the defined hierarchy for the case of arithmetic expressions.
 
 \begin{figure}
 \begin{center}
@@ -169,7 +169,7 @@ x = AEMult(AEVal(2),AEPlus(AEVar('x'),AEPow(AEvar('y'),AEVal(2))))
 \end{verbatim}
 The class that implements constructs related to multiplication and that used to build the above expression is derived from parent class named AExpr (which is empty and serves just the purpose of allowing to build the class hierarchy for arithmetic expressions).
 
-\begin{lstlisting}[language=Python]
+\begin{lstlisting}[style=Python]
 ''' Parent class for remaining arithmetic expressions cases'''
 class AExpr:
     pass
@@ -201,13 +201,17 @@ class AEMult(AExpr):
 The code is quite compact and simple. It consists of a constructor \lstinline!__init__! that takes arguments \lstinline!l! and \lstinline!r! that refer to the left and right subexpression (that must be a particular subclass of the \lstinline!Expr! class). Both subexpressions can be accessed via the methods named \lstinline!left! and \lstinline!right!, respectively. The other methods, namely \lstinline!__eq__! and \lstinline!__str__! are responsible for comparing and pretty-printing the contents of the class, respectively.
 
 
-The same type of hierarchy was implemented for Boolean expressions. In the case of specifications, those reflect the same structure of Boolean expressions, and the code is available in the file \texttt{Specs.py}. Similarly, the class hierarchy for the command's language is implemented in the file \texttt{Imp.py}. The class diagrams for each of these class hierarchies is presented, for your convenience, in the end of this document.
+The same type of hierarchy was implemented for Boolean expressions (\cref{bexprs}). In the case of specifications, those reflect the same structure of Boolean expressions, and the code is available in the file \bash{Specs.py}. Similarly, the class hierarchy for the command's language is implemented in the file \bash{Imp.py}. The class diagrams for each of these class hierarchies is presented, for your convenience, in the end of this document.
 
 \subsection{The VC\_i function: reference function for completing the assignment}
 
+<<<<<<< HEAD
 We will now look into the VC\_i function, available in file \texttt{VCs.py}, and that implements the improved verification condition generation algorithm introduced in the classes. We present its Python code here to help your task of implementing the functions announced above.
 
 First, we recall the algorithmic specification of the function:
+=======
+We will now look into the VC\_i function, available in file \bash{VCs.py}, and that implements the improved verification condition generation algorithm introduced in the classes. First, we recall the algorithmic specification of the function:
+>>>>>>> 5ff3e90a7e0ef050d9365bde6882cedcf4997323
 \begin{align*}
 VC(\kw{skip},Q) & ~=~ \emptyset\\
 VC(x := e,Q)    & ~=~ \emptyset\\
@@ -220,7 +224,7 @@ VCG(\{P\}\,C\,\{Q\}) & ~=~ \{P \to wprec(C,Q)\} \cup VC(C,Q)
 \end{align*}
 
 And now we look into the implemented code of the \textbf{VC\_i} function:
-\begin{lstlisting}[language=Python,mathescape=true]
+\begin{lstlisting}[style=Python]
 def VC_i(p,pst):
     match p:
         case Skip():
@@ -247,9 +251,9 @@ def VC_i(p,pst):
             return i.union(j.union(r))  
 \end{lstlisting}
 
-Note that the several lines starting with "\lstinline!# Case:!" refers to comments that we are added here (not in the original Python gile) just to make clear how the code tries to replicate what is defined at the algorithmic level of the function. This function is part of a larger function named \textbf{VCG}, thus mimicking what has been defined in the algorithmic specification. After some time looking at the produced code, it is easy to see that the function VC\_i follows exactly the structure determined in the specification, that is: it first tries to understand what kind of object is is processing (via the \lstinline!match! and \lstinline!case! constructs) and them implements the corresponding construction of sets.
+Note that the several lines starting with "\lstinline!# Case:!" refers to comments that we are added here (not in the original Python file) just to make clear how the code tries to replicate what is defined at the algorithmic level of the function. This function is part of a larger function named \textbf{VCG}, thus mimicking what has been defined in the algorithmic specification. After some time looking at the produced code, it is easy to see that the function VC\_i follows exactly the structure determined in the specification, that is: it first tries to understand what kind of object is is processing (via the \lstinline!match! and \lstinline!case! constructs) and them implements the corresponding construction of sets.
 
-\paragraph{Note on sets in Python:} In Python, mathematical sets are mapped into the primitive type of objects \lstinline!set!. Thus the usage of the \lstinline!set()! object construction to build the empty set, or the "\{ \}" notation to represent sets of objects. For more information on how to work with sets in Python, please refer to the following addresses:
+\paragraph{Note on sets in Python:} In Python, mathematical sets are mapped into the primitive type of objects \lstinline!set!. Thus the usage of the \lstinline!set()! object construction to build the empty set, or the ``\{ \}'' notation to represent sets of objects. For more information on how to work with sets in Python, please refer to the following addresses:
 \begin{itemize}
   \item W3Schools: \url{https://www.w3schools.com/python/python_sets.asp}
   \item Programiz: \url{https://www.programiz.com/python-programming/set}
@@ -260,25 +264,34 @@ Note that the several lines starting with "\lstinline!# Case:!" refers to commen
 
 To help on the quest for the correct implementation, the code base provided includes unit test files that will allow to check if what you have implemented is indeed according to what is expected. The files are:
 \begin{itemize}
-  \item \texttt{test\_Wprec.py}: this file contains unit tests that verify in the weakest precondition generation function is outputting the expected results.
-  \item \texttt{test\_VCs.py}: this file contains unit tests that verify in the verification condition generation function is outputting the expected results.
-  \item \texttt{test\_Z3Driver.py}: this file contains unit tests that verify in the interface with the Z3 theorem prover is outputting the expected results.
+  \item \bash{test\_Wprec.py}: this file contains unit tests that verify in the weakest precondition generation function is outputting the expected results.
+  \item \bash{test\_VCs.py}: this file contains unit tests that verify in the verification condition generation function is outputting the expected results.
+  \item \bash{test\_Z3Driver.py}: this file contains unit tests that verify in the interface with the Z3 theorem prover is outputting the expected results.
 \end{itemize}
 
+<<<<<<< HEAD
 The way to use this testing scripts is straightforward, that is, if you have access to a command line, you simply run the command \lstinline!python test_Wprec.py! (and similarly with the remaining testing scripts), or you can run it directly using the "run" button available in the IDE you are using.
 
 We now look with a bit more of detail to the structure of \texttt{test\_Wprec.py} and \texttt{test\_VCs.py}. The other unit testing file can be ignored, as it is not important for the objetives of the project (it is just there for those who want to install the Z3 theorem prover and see that the prover indeed is able to prove the correctness of the generated verification conditions generated by your implementation).
+=======
+We now look with a bit more of detail to the structure of \bash{test\_Wprec.py} and \bash{test\_VCs.py}. The other unit testing file can be ignored, as it is not important for the objetives of the project (it is just there for those who want to install the Z3 theorem prover and see that the prover indeed is able to prove the correctness of the generated verification conditions generated by your implementation).
+>>>>>>> 5ff3e90a7e0ef050d9365bde6882cedcf4997323
 
 \section*{Interfacing with the Z3 theorem prover}  
 
-As mentioned during the classes, the code that is being provided contains an interface with an external theorem prover so that we indeed can prove if programs are correct with respect to Hoare Triples. The code for this interface is available in the file \texttt{Z3Driver.py}.
+As mentioned during the classes, the code that is being provided contains an interface with an external theorem prover so that we indeed can prove if programs are correct with respect to Hoare Triples. The code for this interface is available in the file \bash{Z3Driver.py}.
 
+<<<<<<< HEAD
 To be able to use this driver, you must install the corresponding Python module. The module is named Z3Python and can be installed via the Python package manager \texttt{pip}. But you also need to install the Z3 theorem prover itself in your machine. Please follow the instructions available in the following websites:
 \begin{itemize}
   \item Windows: \url{https://blog.fearcat.in/a?ID=00950-982838a1-76e1-4402-9312-d3847cb98312}
   \item Mac (using homebrew): \url{https://formulae.brew.sh/formula/z3}
   \item Linux (using Ubuntu): \url{https://www.howtoinstall.me/ubuntu/18-04/z3/} 
 \end{itemize}
+=======
+To be able to use this driver, you must install the corresponding Python module. The module is named Z3Python and can be installed via the Python package manager \bash{pip}.
+
+>>>>>>> 5ff3e90a7e0ef050d9365bde6882cedcf4997323
 
 Note that if you are using a Linux distribution that is not Ubuntu, then you should use that distribution's own package manager (contact \url{drp@isep.ipp.pt} in case you find difficulties).
 
@@ -349,7 +362,7 @@ The class diagram for Boolean expressions is captured in Figure \ref{bools} by t
 \label{bools}
 \end{figure}
 
-The class diagram presented in Figure \ref{specs} captures the syntax of specifications. Specifications are very similar to Boolean expressions but they also consider universal and existential quantifiers. In file \texttt{Spec.py} you can find the code that translates a Boolean expression onto a logically equivalent specification; that function is named \texttt{bexp2spec}.
+The class diagram presented in \cref{specs} captures the syntax of specifications. Specifications are very similar to Boolean expressions but they also consider universal and existential quantifiers. In file \bash{Spec.py} you can find the code that translates a Boolean expression onto a logically equivalent specification; that function is named \bash{bexp2spec}.
 
 \begin{figure}
 \begin{center}
