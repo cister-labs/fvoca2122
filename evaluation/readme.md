@@ -12,9 +12,8 @@ The project component is further subdivided into 3 parts:
  - (35%) [TP1: Specification and verification in Uppaal](../assignments/tp1.pdf)
  - (20%) [TP2: Implementation of a Simple Program Verifier using Hoare Logic](../assignments/tp3.pdf)
 
-## Temporary grades
 
-
+## Temporary marks
 
 |Numero  | Nome | Trablho de casa (5%) | TP1: UPPAAL (35%) | TP2: SW Verification (20%) | Média ponderada | Comentários |
 |---|---|:---:|:---:|:---:|:---:|---|
