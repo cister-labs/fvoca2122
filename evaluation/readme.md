@@ -15,17 +15,17 @@ The project component is further subdivided into 3 parts:
 
 ## Temporary marks
 
-|Numero  | Nome | Trablho de casa (5%) | TP1: UPPAAL (35%) | TP2: SW Verification (20%) | Média ponderada | Comentários |
-|---|---|:---:|:---:|:---:|:---:|---|
-| 1150389 | Anaísa Carvalho | 6.53 |   9.44 |   20.00 |  12.72 | Trabalho de casa não entregue nas semanas 2 e 3. |
-| 1210133 | Gleizielly Ferreira | 20.00 |  15.49 |  20.00 |  17.37 | TP1 entregue com 6 dias de atraso (-5%). |
-| 1180807 | Hugo Silva |  20.00 |  15.76 |  20.00 |  17.52 | |
-| 1210443 | Jorge Silva | 20.00 |  16.50 |  20.00 |  17.96 | |
-| 1210646 | João Passos | 18.37 |  16.02 |  20.00 |  17.54 | Trabalho de casa não entregue do exercício 1.4. TP1 entregue com 2 dias de atraso (-5%). |
-| 1141180 | Luís Carvalho | 6.53 |   9.44 |   20.00 |  12.72 | Trabalho de casa não entregue nas semanas 2 e 3. |
-| 1210138 | Marcia Rocha |  20.00 |  15.49 |  20.00 |  17.37 | TP1 entregue com 6 dias de atraso (-5%). |
-| 1151883 | Marco Silva | 20.00 |  18.71 |  20.00 |  19.25 | |
-| 1210445 | Miguel Oliveira | 20.00 |  16.50 |  20.00 |  17.96 | |
-| 1200115 | Paulo Batista | 15.92 |  18.71 |  20.00 |  18.91 | Trabalho de casa não entregue na semana 3. |
-| 1180558 | Pedro Vicente | 15.92 |  16.02 |  20.00 |  17.34 | Trabalho de casa não entregue na semana 3. TP1 entregue com 2 dias de atraso (-5%). |
-| 1211970 | Tiago Duarte |  20.00 |  15.76 |  20.00 |  17.52 | |
+|Numero  | Nome | Trabalho de casa (5%) | TP1: UPPAAL (35%) | TP2: SW Verification (20%) | Exame Normal (40%)  | Nota provisória | Comentários |
+|---|---|:---:|:---:|:---:|:---:|:---:|---|
+| 1150389 | Anaísa Carvalho |  6.53 |   9.44 |   20.00 |  5.45 |   **10** |  Trabalho de casa não entregue nas semanas 2 e 3. 
+| 1210133 | Gleizielly Ferreira |  20.00 |  15.49 |  20.00 |  14.35 |  **16** |  TP1 entregue com 6 dias de atraso (-5%). 
+| 1180807 | Hugo Silva |   20.00 |  15.76 |  20.00 |  19.40 |  **18** |  
+| 1210443 | Jorge Silva |  20.00 |  16.50 |  20.00 |  7.20 |   **14** |  
+| 1210646 | João Passos |  18.37 |  16.02 |  20.00 |  - |  **-** | Trabalho de casa não entregue do exercício 1.4. TP1 entregue com 2 dias de atraso (-5%). 
+| 1141180 | Luís Carvalho |  6.53 |   9.44 |   20.00 |  1.65 |   **8** | Trabalho de casa não entregue nas semanas 2 e 3. 
+| 1210138 | Marcia Rocha |   20.00 |  15.49 |  20.00 |  17.85 |  **18** |  TP1 entregue com 6 dias de atraso (-5%). 
+| 1151883 | Marco Silva |  20.00 |  18.71 |  20.00 |  17.25 |  **18** |  
+| 1210445 | Miguel Oliveira |  20.00 |  16.50 |  20.00 |  14.90 |  **17** |  
+| 1200115 | Paulo Batista |  15.92 |  18.71 |  20.00 |  7.00 |   **14** |  Trabalho de casa não entregue na semana 3. 
+| 1180558 | Pedro Vicente |  15.92 |  16.02 |  20.00 |  17.38 |  **17** |  Trabalho de casa não entregue na semana 3. TP1 entregue com 2 dias de atraso (-5%). 
+| 1211970 | Tiago Duarte |   20.00 |  15.76 |  20.00 |  17.90 |  **18** |  
